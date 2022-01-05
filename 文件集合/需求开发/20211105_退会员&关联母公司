@@ -1,0 +1,35 @@
+
+前端接口：
+	改动：
+		1.会员列表信息	
+		vipManagement/list.json
+		新增字段 showRefundVipBtn（是否展示"退会员"会员按钮(会员状态处于「等待生效」和「生效中」)）
+
+		2.会员开通记录列表信息
+		vipManagementGrant/list.json
+		入参新增筛选字段 managementGrantNo （会员交易记录ID）
+		结果新增字段	showAssociateParentCompanyBtn （是否展示'关联母公司'按钮）
+
+	新增：
+		1.退会员		
+		vipManagement/refundVip.json
+
+		2.关联母公司
+		vipManagementGrant/associateParentCompany.json
+
+		3.根据名称查询会员数据
+		vipManagement/queryVipSimpleInfo.json
+
+1115优化：
+	改动：
+		1.会员开通记录列表信息
+		vipManagementGrant/list.json
+		新增字段 billFlowPayTime 流水支付时间
+
+		2.分期付款任务列表
+		/vipInstallmentTaskList/list.json
+		新增字段 billFlowPayTime 流水支付时间
+
+		3.充值流水查询[后台]
+		/balance/rechargeList.json
+		新增字段 billFlowPayTime 流水支付时间		

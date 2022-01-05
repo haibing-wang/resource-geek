@@ -1,0 +1,104 @@
+会员1.3_20210906
+
+需确认事宜：
+	1.车规问题
+	2.遗留的需求被删掉了
+	3.会员816需求验收
+
+1.b2b_vip_rights_use_type 权益类型表 新增类型“阶梯计费”
+2.b2b_vip_rights_category_use_type_map 新增 银行精选-阶梯计费、极速代采-费率穿透映射关系
+3.b2b_vip_rights_ins（权益实例） 和 b2b_vip_rights_tp（权益模板） 扩充字段“biz_value”长度为512，用于存储阶梯计费json串
+4.b2b_vip_rights_use_record（费率使用记录表）扩充字段“biz_value”长度为512
+
+阶梯计费模板存储如下：
+[{
+	"index": 0,
+	"cycleDays": 30,
+	"billingType": 1,
+	"rate": 0.00013
+}, {
+	"index": 1,
+	"cycleDays": 60,
+	"billingType": 2,
+	"rate": 0.0003
+}]
+参数释义：
+index：第几个周期，从0开始
+cycleDays：当前周期持续天数
+billingType：计费类型 1：固定费率，2：资方成本
+rate：费率
+
+5.b2b_vip_rights_ins 和 b2b_vip_rights_tp 新增字段“是否受车规限制”、“享受车规类型”2个字段
+6.“分销通会员”和“卖好车会员”将费用记录订正计费模板类型（注意固定费率要是金融计算后的费率）
+
+前端新增接口：
+app：
+	获取会员权益图片 /v1/activateVip/getVipRightsImgUrl.json
+	https://yapi.maihaoche.net/project/501/interface/api/76045
+后台页面：
+	保存权益模板 /saveRightsTemplate.json
+	https://yapi.maihaoche.net/project/501/interface/api/59125
+	入参新增属性 segmentList(分段信息)、specList(享受权益车规集合)
+
+	权益模板回显 /getRightsTemplateEcho.json
+	https://yapi.maihaoche.net/project/501/interface/api/59141
+	返回新增属性 segmentList(分段信息)、specList(享受权益车规集合)
+
+	编辑权益模板 /editRightsTemplate.json
+	https://yapi.maihaoche.net/project/501/interface/api/59149
+	入参新增属性 segmentList(分段信息)、specList(享受权益车规集合)
+
+	权益模板详情 /getRightsTpDetail.json
+	https://yapi.maihaoche.net/project/501/interface/api/61493
+	返回值新增属性 specDesc(享受权益车规)
+	
+	查询权益模板列表 /queryRightsTemplateList.json
+	https://yapi.maihaoche.net/project/501/interface/api/59133
+	返回值新增属性 specDesc(享受权益车规)
+
+	查询权益列表 /getRightsInsPageList.json
+	https://yapi.maihaoche.net/project/501/interface/api/59165
+	返回值新增属性 specDesc(享受权益车规)
+
+	权益包详情 /rightsTemplatePackage/detail.json
+	https://yapi.maihaoche.net/project/501/interface/api/61149
+	返回值新增属性 specDesc(享受权益车规)
+
+
+
+会员权益图片展示功能先上线
+
+分支
+lite：hotfix/rights_img_gmy_20210908
+polestar：hotfix/rights_img_gmy_20210908
+
+数据初始化脚本：
+INSERT INTO `db_b2b`.`b2b_lite_conf`(`type`, `param_key`, `param_value`, `param_desc`) VALUES(
+2,'app_rights_img','https://img.maihaoche.com/E66F74CE-3E70-4D06-8395-42775D40E32D.png','app会员权益图片展示'
+);
+
+
+TC问题：
+
+/ 替换成 所有车规均享受
+
+
+会员开通流程：
+	1.点击。。。调用 /h1/vipManagement/vipGradeSign
+	 去斯柯达创建合同并生成b2b_vip_management_contract_sign 中的数据，此时还没有开通记录
+	2.然后回去走签约的流程，此流程是原先就有的非会员系统开发
+	3.签约完成后，lite会监听斯柯达的签约完成消息
+	  1）生成开通记录表记录
+	  2）生成分期支付任务表记录
+	  3）更新签章表状态为“已签章”
+	  4）我司盖章
+	4.然后调用会员费用接口，此时就可以去支付了 /h1/vipManagement/getVipFee
+	5.点击去支付的时会调用 /h1/vipManagement/payVipFee
+	  1）生成财务账单
+	  2）创建 b2b_vip_management_bill_record 记录
+	6.支付成功后监听财务回调，会调用 VipManagementGrantServiceImpl#payFinish
+	  1）b2b_vip_management_installment 和 b2b_vip_management_bill_record 设为支付完成
+	  2）创建 b2b_vip_management 记录
+	  3）生成等级实例、权益包实例、权益实例
+
+

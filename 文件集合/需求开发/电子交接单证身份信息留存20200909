@@ -1,0 +1,73 @@
+
+https://gw-cullinan-m.maihaoche.net/wms/behavior/helper/receiveCarReceipt/preCreate
+生成收车凭证
+添加2张照片
+IDFront	  身份证正面
+IDReverse 身份证反面
+数据库增加2个字段，并且DO,DTO也要增加 mclaren ,gw_cullinan
+
+https://gw-cullinan-m.maihaoche.net/wms/behavior/helper/digitCheckPreCreate
+入库信息采集表
+用的和收车凭证是一个表
+wmsDigitContractAO.digitCertificatePreCreate
+
+https://gw-cullinan-m.maihaoche.net/wms/behavior/helper/depart/cert/create
+车辆交接确认单
+主要逻辑：departFromWarehouseAO.digitCheckPreCreate(form);
+
+
+
+物流交车单-hummer
+createPodContract.json
+修改表：tms_personal_signer_record
+
+
+表修改：
+wms_car_digit_contract ：增加id_photo_front，id_photo_reverse,id_photo_hold
+tms_personal_signer_record: 增加 id_photo_front，id_photo_reverse
+
+
+mclaren: feature/pic_opt_guomaoyang20200831
+gw-cullinan: feature/id_pic_guomaoyang20200901
+hummer: feature/id_pic_guomaoyang20200901
+
+
+//img.maihaoche.com/wms/checkIn/o_1eh4dknh01vj8vuo1bgh1gc1re6m_engine.png
+//img.maihaoche.com/images/images_car/imgNameplate.png
+
+the front of identity card
+id_photo_front 身份证正面照片
+id_photo_reverse 身份证反面照片
+
+digitCheckPreCreate
+carReceiptPreCreate
+
+
+#预发，线上增加字段
+ALTER TABLE wms_car_digit_contract ADD COLUMN id_photo_front VARCHAR(1024) DEFAULT NULL COMMENT '身份证正面照片';
+ALTER TABLE wms_car_digit_contract ADD COLUMN id_photo_reverse VARCHAR(1024) DEFAULT NULL COMMENT '身份证反面照片';
+ALTER TABLE wms_car_digit_contract ADD COLUMN id_photo_hold VARCHAR(1024) DEFAULT NULL COMMENT '手持身份证照片';
+
+ALTER TABLE tms_personal_signer_record ADD COLUMN id_photo_front VARCHAR(383) DEFAULT NULL COMMENT '身份证正面照片';
+ALTER TABLE tms_personal_signer_record ADD COLUMN id_photo_reverse VARCHAR(383) DEFAULT NULL COMMENT '身份证反面照片';
+
+
+
+ 物流交接单模板增加字段：
+ 	delivery.idPhotoFront 交车人身份证正面照片
+ 	delivery.idPhotoReverse 交车人身份证反面照片
+ 	receive.idPhotoFront 收车人身份证正面照片
+ 	receive.idPhotoReverse 收车人身份证反面照片
+
+收车凭证，商品车入库信息采集表，车辆交接确认单：
+	idPhotoFront 身份证正面照片
+	idPhotoReverse 身份证反面照片
+
+gw-cullinan：release/id_pic_guomaoyang20200909
+mclaren：release/id_pic_guomaoyang20200909
+hummer：release/id_pic_guomaoyang20200909
+
+
+
+
+ 	UPDATE `wms_car_photo_configure` set `status` =1,`example_url` ='//img.maihaoche.com/wms/checkIn/o_1egne0tkb1g5lffne4sqrm1u3p2u_engineCompartment%20.jpg',`gmt_modified` =now() where `photo_configure_id` =11

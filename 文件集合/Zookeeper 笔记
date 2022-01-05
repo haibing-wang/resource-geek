@@ -1,0 +1,80 @@
+Zookeeper 笔记
+
+ZookeeperServer启动流程
+1.读取配置文件
+2.根据磁盘持久化，初始化DataTree
+
+
+ 客户端和server链接，判断sessionTimeOut 谁的小最终用谁的
+
+ 真正处理客户端链接的方法 doIO NIOServerCnxn
+ 解析的客户端socket数据的方法是ZKServer 这里简写
+
+zk处理请求的线程模型
+
+服务端处理所有的请求之前都会去判断请求限流器是否启动成功，如果限流器没成功则会等待，直至限流器启动成功	
+
+请求大致路径：
+请求限流器->处理器链（prep->sync->final）这三个处理器的模型都是 线程+队列
+
+用一个map去维护父节点的cversion，对cv进行操作的的时候加同步锁
+
+
+单表访问方法
+
+	const 直接通过主键或者唯一二级索引去查询
+		例如：SELECT * FROM single_table WHERE id = 1438;
+
+	ref 使用索引进行等值比较时
+		例如：SELECT * FROM single_table WHERE key1 = 'abc';
+
+	ref_or_null 使用二级索引进行等值匹配并且判断is null
+		例如：SELECT * FROM single_table WHERE key1 = 'abc' OR key1 IS NULL;
+
+	range 使用索引进行范围匹配
+		例如：EXPLAIN select * from allot_car where  allot_order_id > 3265
+
+	index 这个类型较为复杂
+		比如有个联合主键idx_k1_k2_k3,这个时候用k2等值查询，因为k2不是最左前缀，但是查询出得列都在这个联合索引上。因为聚簇索引上边有完整的用户记录和隐藏列，二级索引上只有索引列和主键，因此这个时候会去遍历这个联合索引，此时的访问类型就是index；
+		select k1,k2,k3 from table where t2 = "xxx";
+
+	all 毋庸置疑就是遍历全表，遍历整个聚簇索引
+
+	索引合并
+
+
+EXPLAIN 关键字
+	每一个select会分配一个id
+	在连接查询的执行计划中，每个表都会对应一条记录，这些记录的id列的值是相同的，出现在前边的表表示驱动表，出现在后边的表表示被驱动表。
+
+ Union 合并去重
+ Union All 合并
+
+select_type
+	SIMPLE 查询语句中不包含UNION或者子查询的查询都算作是SIMPLE类型
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

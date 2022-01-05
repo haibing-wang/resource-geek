@@ -1,0 +1,74 @@
+在库绑定gps：
+	校验是否已绑定：eys - com.mhc.eye.core.biz.service.remote.impl.GpsFacadeImpl#isRepeatBind
+	wms_car_bind_gps 判断这张表是是否有绑定信息  参数：status =1 (已绑定状态)，gpsNo=。。。
+
+调拨绑定gps：
+	校验是否已绑定：McLaren - com.mhc.mclaren.ao.handler.impl.gps.GpsBindAllotBaseHandler#isBinded
+	eye_equipment_bind_car_info 参数：设备类型-1(gps类型) ，bindStatus-1-已绑定，EquipmentInputId-设备编号
+
+
+
+
+
+对接金融的2个接口：
+
+#查询依据都是金融订单号+车架号 查询待入库状态的入库单里面的目的地仓库 仓储模块
+SELECT
+	c.warehouse_id 
+FROM
+	wms_warehouse_entry_notice a
+	JOIN wms_car_notice_map b ON a.notice_id = b.notice_id
+	JOIN wms_car c ON b.car_id = c.wms_car_id 
+WHERE
+	a.order_no = 'YH202005150142844524'
+	AND c.cc_car_id = 100632128 
+	AND c.store_status = 1;
+
+
+#查询依据都是金融订单号+车架号 查询未完成的运单里面的目的地仓库
+SELECT
+	b.warehouse_id 
+FROM
+	tms_transport_order a
+	JOIN tms_transport_car b ON a.transport_order_id = b.transport_order_id 
+WHERE
+	a.biz_order_no = 'G20180511100141' 
+	AND b.cc_car_id = 100591973 
+	AND a.order_status IN ( 1, 2 );
+
+
+mvn -pl mclaren-api -am clean deploy -U -DskipTests -Drevision=2.8.9
+mvn -pl hummer-api -am clean deploy -U -DskipTests -Drevision=2.4.6-SNAPSHOT
+
+#根据金融订单号和ccCarId查询待入库状态的入库单里面的目的地仓库
+feature/query_warehouse_guomaoyang_20200520
+mclaren-api: 2.8.8-SNAPSHOT
+com.mhc.mclaren.api.service.IWmsCarService#queryDesWarehouseInfo
+
+#根据金融订单号和ccCarId查询未完成的运单里面的目的地仓库
+feature/query_destination_warehouse_guomaoyang_20200520
+hummer-api: 2.4.6-SNAPSHOT
+com.mhc.hummer.api.service.TransportOrderService#queryDestinationWarehouseInfo
+
+
+####更新版本
+#批量根据金融订单号和ccCarId查询未完成的运单里面的目的地仓库
+feature/query_destination_warehouse_guomaoyang_20200520
+hummer-api: 2.4.7-SNAPSHOT
+com.mhc.hummer.api.service.TransportOrderService#batchQueryDestinationWarehouseInfo
+
+
+#批量根据金融订单号和ccCarId查询待入库状态的入库单里面的目的地仓库
+feature/query_warehouse_guomaoyang_20200520
+mclaren-api 2.9.1-SNAPSHOTSNAPSHOT
+com.mhc.mclaren.api.service.IWmsCarService#batchQueryDestinationWarehouseInfo
+
+4000
+3500
+700
+
+8200
++500
+2000
+
+10700

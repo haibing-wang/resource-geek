@@ -1,0 +1,232 @@
+1.库位数权益值返回以类似于余额的形式返回的，直接增加可用库位数字段（库位数是否可用字段考虑是否加入）
+
+feature分支：
+	lite: feature/vip_management2_20210512
+	polestar: feature/vip_management2_20210512
+	gw_mini: feature/vip_management2_20210512
+
+
+X 锁：
+	1.在查询成功后说明已经独占这条数据。
+	2.
+
+附加费用类型 extra_charge_type
+附加费用 extra_charge_rate
+是否受额度限制 quota_limit
+
+设置枚举：
+	1.权益类型 对应数据库
+	2.权益业务类型
+	3.权益使用次数枚举
+
+后台接口定义：
+	1.获取会员权益：增加备注字段、库位、可用额度；
+	2.冻结权益接口变动：增加备注、额度使用
+	3.权益消息：增加备注字段；
+	4.解冻权益：增加额度解冻，并设置备注
+
+变更：
+	数据库变更：
+		1.表b2b_vip_rights_ins 新增字段：extra_charge_type、extra_charge_rate、quota_limit_type
+		2.表b2b_vip_grade_ins 新增字段：effective_start_time、effective_end_time、pre_grade_ins_id
+		4.权益种类表配置新的权益、权益类型、以及权益和权益类型的关系表
+
+	配置变更：
+		1.代码里新增机器人群消息，代码枚举
+		2.
+
+增加配置：
+wechat.robotKey.vipCloseAlarm = 3919e6d4-fba8-4cd9-882b-9d638f3e7854
+wechat.robotKey.closeRechargeAlarm = 016c1867-a947-4ef2-9304-eafcc4d23b55
+wechat.robotKey.balanceException = 016c1867-a947-4ef2-9304-eafcc4d23b55
+wechat.robotKey.allowanceBalanceException = 016c1867-a947-4ef2-9304-eafcc4d23b55
+wechat.robotKey.rightsOperateException = b84441d8-bc4c-4269-b461-8363e9c489cb
+wechat.robotKey.vipInvalidWithoutPaymentException = b84441d8-bc4c-4269-b461-8363e9c489cb
+wechat.robotKey.rightsMsgConsumerException = b84441d8-bc4c-4269-b461-8363e9c489cb
+
+数据导入注意事项：
+	1.单元格正确匹配新增字段
+	2.分期支付时间没有要为空
+	3.分批导入：先导入正常购买会员的信息，再导入叠加购买的会员
+	4.未签订合同的：合同id确保不重复
+
+
+
+
+客户权益失效节点：自然到期、禁用会员、用户权益列表手动禁用、客户分期付款到期未支付，
+
+确认点：
+	1.新增的权益
+	2.中大B导入的表格
+
+
+
+
+接口改动：
+	lite包版本：2.4.6-SNAPSHOT
+	1.获取会员权益和批量获取会员权益增加字段  com.mhc.lite.api.VipRightsFacade#getVipInfo & com.mhc.lite.api.VipRightsFacade#getBatchVipInfo
+	 /**
+     * 金融额度 单位（分）
+     */
+    private Long financialQuota;
+    /**
+     * 仓储免费库位数
+     */
+    private Integer freeLocation;
+    	权益增加字段：
+    		/**
+		     * 附加费用类型 10：服务费，20：过票服务费
+		     * @see com.mhc.lite.api.enums.RightsExtraChargeTypeEnum
+		     */
+		    private Integer extraChargeType;
+		    /**
+		     * 附加费用利率 0.0015
+		     */
+		    private BigDecimal extraChargeRate;
+		    /**
+		     * 是否受额度限制 1：受限，0：不受限
+		     * @see com.mhc.lite.api.enums.RightsQuotaLimitTypeEnum
+		     */
+		    private Integer quotaLimitType;
+    2.冻结权益接口新增字段：com.mhc.lite.api.VipRightsFacade#freezeRights
+       /**
+	     * 占用金融额度 单位（分）
+	     */
+	    private Long financialQuota;
+	    /**
+	     * 备注
+	     */
+	    private String remark;
+	3.解冻权益增加字段: com.mhc.lite.api.VipRightsFacade#unfreezeRights
+	   /**
+	     * 备注
+	     */
+	    private String remark;
+	4.查询金融订单费率返回参数修改为DTO对象：com.mhc.lite.api.VipRightsFacade#queryFinanceRateByBizNo
+		/**
+	     * 金融订单费率
+	     */
+	    private BigDecimal rate;
+	    /**
+	     * 是否资方穿透
+	     */
+	    private Boolean capitalPenetrationType = Boolean.FALSE;
+	5.权益消费消息体新增字段:com.mhc.lite.api.message.ConsumeRightsMessage
+		/**
+	     * 备注
+	     */
+	    private String remark;
+	6.会员权益变更消息（目前仓储需要接）
+		topic：topic_lite_vip_rights  
+		tag：vip_rights_change  
+		消息体：com.mhc.lite.api.message.VipRightsChangeMessage
+
+接口改动：
+	1.冻结权益接口入参新增特殊操作枚举 com.mhc.lite.api.VipRightsFacade#freezeRights
+		/**
+	     * 特殊操作枚举
+	     */
+	    private VipRightsSpecialOperateEnum vipRightsSpecialOperateEnum;
+	2.根据金融单号查询费率返回值增加字段 "是否含有会员权益" com.mhc.lite.api.VipRightsFacade#queryFinanceRateByBizNo
+	  /**
+	     * 是否有会员权益
+	     */
+	    private Boolean hasVipRights= Boolean.TRUE;
+	3.用户权益变更消息体字段变更
+		/**
+	     * 权益变更类型
+	     */
+	    private VipRightsChangeTypeEnum changeType;
+	4.增加释放额度接口
+		com.mhc.lite.api.VipRightsFacade#unfreezeAllowance
+
+接口改动：
+	1.获取会员信息接口增加会员有效期字段 com.mhc.lite.api.VipRightsFacade#getVipInfo
+		/**
+	     * 会员有效起始日期
+	     */
+	    private Date effectiveStartTime;
+	    /**
+	     * 会员有效截止日期
+	     */
+	    private Date effectiveEndTime;
+
+接口改动：
+	1.获取会员信息接口增加字段 com.mhc.lite.api.VipRightsFacade#getVipInfo
+		/**
+	     * 客户群体
+	     */
+	    private CustomerTypeEnum customerType;
+	
+	2.根据金融单号查询费率返回值增加权益信息 com.mhc.lite.api.VipRightsFacade#queryFinanceRateByBizNo
+		/**
+	     * 对应的权益信息
+	     */
+	    private UserRightsDTO rightsInfo;
+
+
+新增接口：
+	1.新增获取含有指定权益的会员信息接口	com.mhc.lite.api.VipRightsFacade#getVipsHasSpecifyRightsType
+	获取含有指定权益的会员信息接口入参变更 	com.mhc.lite.api.VipRightsFacade#getVipsHasSpecifyRightsType
+
+接口改动：
+	1.用户权益变更消息体字段变更 变为list
+		private List<Long> partnerIds;
+
+页面改动：
+	/rightsTemplate/saveRightsTemplate.json	保存权益模板
+	/rightsTemplate/queryRightsTemplateList.json	查询权益模板列表
+	/rightsTemplate/getRightsTemplateEcho.json 权益模板回显
+	/rightsTemplate/editRightsTemplate.json	编辑权益模板
+	/rightsTemplate/queryRightsTemplateByCode.json	根据类型获取权益模板列表
+
+	/rightsTemplatePackage/detail.json	权益包详情
+	/vipManagement/detail.json	会员管理-查询会员权益详情
+	/rightsList/getRightsInsPageList.json	查询用户权益列表
+	/vipManagementGrant/detail.json 开通记录-查询权益详情
+
+
+#清除公司会员信息
+
+# 删除权益包实例
+delete from b2b_vip_rights_package_ins where  vip_id = (SELECT id from b2b_vip_management where partner_id=10341);
+# 删除权益实例
+delete from b2b_vip_rights_ins where  partner_id=10341;
+# 删除等级实例
+delete from b2b_vip_grade_ins where vip_id = (SELECT id from b2b_vip_management where partner_id=10341);
+# 会员状态变更记录
+delete from b2b_vip_management_operate where  partner_id=10341;
+
+# 删除会员表
+delete from b2b_vip_management where  partner_id=10341;
+# 删除会员开通账单记录表
+delete from b2b_vip_management_bill_record where  partner_id=10341;
+# 会员合同签约记录表
+delete from b2b_vip_management_contract_sign where  partner_id=10341;
+# 会员开通记录表
+delete from b2b_vip_management_grant where  partner_id=10341;
+
+# 公司余额表
+delete from b2b_partner_balance where  partner_id=10341;
+# 余额变更记录
+delete from b2b_partner_balance_change where  partner_id=10341;
+# 余额充值记录
+delete from b2b_partner_balance_recharge where  partner_id=10341;
+
+# 分期支付记录
+delete from b2b_vip_management_installment where  partner_id=10341;
+
+# 额度相关表
+delete from b2b_partner_allowance where  partner_id=10341;
+delete from b2b_partner_allowance_detail where  partner_id=10341;
+delete from b2b_partner_allowance_change where  partner_id=10341;
+delete from b2b_partner_allowance_change_view where  partner_id=10341;
+
+评审
+	1.展示是否受额度限制 银行精选、厂家包邮、订单宝展示 X
+	2.修改权益对照 厂家包邮、订单宝 取消费率折扣类型 X
+	3.等级实例表增加字段 X
+	4.消息报错 发送群消息
+	5.解冻群益逻辑删除费率记录
+	6.查询费率接口添加是否受额度限制 X
+	7.review 记录

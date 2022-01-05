@@ -1,0 +1,299 @@
+
+需求：09 承运商物流费线上化
+https://cf.dawanju.net/pages/viewpage.action?pageId=60626289
+
+物流结算单梳理
+
+一.queryUserTag.json
+
+	参数：
+		billType: 3
+		periodMonth: 8
+		periodTimeType: "1"
+		periodYear: 2020
+		userId: 100350
+		userType: 1
+	1.构造第一个条件，如果用户类型是承运商则查询必须签章的承运商列表，条件增加：andCarrierIdNotIn (必须签章carrierIds)
+		追加公共条件：
+			过滤车辆条件:
+				SELECT DISTINCT
+					transport_order_id 
+				FROM
+					tms_transport_car 
+				WHERE
+					(
+						STATUS = 1
+						AND car_transport_status <> 10 #车辆运输状态：1-待收费；2-待验车；3-可验车；4-待发车；5-可发车；6-在途；7-到达不可放车；8-到达可放车；9-已完成；10-作废;20-无物流待入库；25-无物流完成
+						AND shipping_time BETWEEN ? 
+						AND ?  #车辆实际的发运时间（2018年6月4日修改为提车时间）
+						AND carrier_settlement_status = 0 #承运商结算状态（0：未结清，1：已结算，2：结算中）
+						AND car_transport_status = 9 #车辆运输状态：1-待收费；2-待验车；3-可验车；4-待发车；5-可发车；6-在途；7-到达不可放车；8-到达可放车；9-已完成；10-作废;20-无物流待入库；25-无物流完成
+						AND img_delivery IS NOT NULL  #交车单
+					AND img_delivery <> ''
+					AND pod_status = 4 #已经签章
+					
+				#1(Integer), 10(Integer), 2020-08-01 00:00:00.0(Timestamp), 2020-09-01 00:00:00.0(Timestamp), 0(Integer), 9(Integer), (String), 4(Integer)
+				1.查询承运商结算状态为未结算，pod_status 为4(已签章)，有交车单，运输状态为9（已完成）的运单id
+
+			通过过滤车辆条件拿到可以结算的运单id。
+	2.构造第二个条件，合同状态=  15(已成交)
+		公共条件同上
+
+	3.查询可以结算的承运商
+		SELECT
+			carrier_id AS userId 
+		FROM
+			tms_transport_order 
+		WHERE
+			(
+				STATUS = 1 
+				AND order_status IN ( 1, 2, 3, 10 ) #运单的状态：1-待收款；2-进行中；3-已完成；4-失效; 10-无需物流
+				AND carrier_id NOT IN ( 100351, 100379, 20, 100375, 102, 100405 ) #不是非必须签章承运商
+				AND carrier_id IS NOT NULL 
+				AND carrier_name IS NOT NULL 
+				AND transport_order_id IN ( ?, ?, ? ) # 通过过滤车辆条件拿到的运单id
+			) 
+			OR ( contract_status = 15 #已完成 运输合同状态（冗余字段有MQ自动同步，5-待委托方确认；10-待承运方签章；15-已成交；20-作废）
+			AND carrier_id IS NOT NULL AND carrier_name IS NOT NULL AND transport_order_id IN ( ?, ?, ? ) ) 
+		GROUP BY
+			carrier_id
+			#1(Integer), 1(Integer), 2(Integer), 3(Integer), 10(Integer), 100351(Long), 100379(Long), 20(Long), 100375(Long), 102(Long), 100405(Long), 15545(Long), 15585(Long), 15601(Long), 15(Integer), 15545(Long), 15585(Long), 15601(Long)
+		
+		逻辑概括：
+			查询承运商结算状态为未结算，pod_status 为4(已签章)，有交车单，运输状态为9（已完成）的运单id
+			满足其中一个条件：
+			1.查询非必须签章承运商，order_status 为  1, 2, 3, 10 ，运单(tms_transport_car 查询承运商结算状态为未结算，pod_status 为4(已签章)，有交车单，运输状态为9（已完成）的运单id)
+			2.合同状态为 15(已完成)，运单id 在(tms_transport_car 查询承运商结算状态为未结算，pod_status 为4(已签章)
+			拿到可以结算承运商
+
+二、querySettlement.json
+	参数：
+		billType: 3
+		limit: 20
+		offset: 0
+		order: "asc"
+		pageNo: 1
+		pageSize: 20
+		periodMonth: 8
+		periodTimeType: "1"
+		periodYear: 2020
+		transportStatus: 9
+		userId: 100350
+		userType: 1
+
+		1.查询运单
+
+		SELECT
+			transport_order_id 
+		FROM
+			tms_transport_order 
+		WHERE
+			(
+				STATUS = 1 
+				AND order_status IN ( 1, 2, 3, 10 ) #运单的状态：1-待收款；2-进行中；3-已完成；4-失效; 10-无需物流
+				AND carrier_id = 100350 
+				AND carrier_id IS NOT NULL 
+				AND carrier_name IS NOT NULL 
+				AND biz_type <> 25 #业务类型：1-业外运单；2-业内运单
+			AND biz_type <> 29
+			)
+			#1(Integer), 1(Integer), 2(Integer), 3(Integer), 10(Integer), 100350(Long), 25(Integer), 29(Integer)
+
+		2.最终查询SQL，查询出 TmsTransportCarDO
+		SELECT
+			* 
+		FROM
+			tms_transport_car 
+		WHERE
+			(
+				STATUS = 1 
+				AND car_transport_status <> 10 #车辆运输状态：1-待收费；2-待验车；3-可验车；4-待发车；5-可发车；6-在途；7-到达不可放车；8-到达可放车；9-已完成；10-作废;20-无物流待入库；25-无物流完成
+				AND shipping_time BETWEEN ? #车辆实际的发运时间（2018年6月4日修改为提车时间）
+				AND ? 
+				AND carrier_settlement_status = 0 #承运商结算状态（0：未结清，1：已结算，2：结算中）
+				AND pod_status IN ( 3, 4 ) #交车单状态(0：待上传交车单，1：待审核，2：待异常处理，3：待签章；4: 完成)
+				AND car_transport_status = 9 #车辆运输状态：1-待收费；2-待验车；3-可验车；4-待发车；5-可发车；6-在途；7-到达不可放车；8-到达可放车；9-已完成；10-作废;20-无物流待入库；25-无物流完成
+				AND img_delivery IS NOT NULL 
+				AND img_delivery <> ''
+				AND transport_order_id IN ( ?, ? ) #订单id 上边sql的结果
+			) 
+		ORDER BY
+			gmt_create DESC 
+			LIMIT ?,
+			?
+		逻辑概括：
+			分页查询 根据承运商id ，提车时间(看选择的类型)，查询 未结算，car_transport_status(车辆运输状态为已完成)，交车状态为(待签章，已签章)，已有交车单
+三、大致逻辑同第一个
+
+四、通知核算
+dispatcherNoticeChecking.json?billId=514839
+
+调度通知结算
+dispatcherNoticeSettlement.json
+
+删除结算单
+cancelBill.json?billId=51483
+
+// 回单消息消费
+com.mhc.hummer.core.ons.subscriber.SeatPayoutMessageConsumer
+
+
+枚举类：BillStatusEnum
+
+
+确认信息：
+	1.说明目前结算单的创建逻辑
+	2.生成财务结算单是否还需要？
+	3.
+
+
+接口统计：
+	1.承运商签章完成，扭转账单状态，调用代办中心接口、生成财务账单
+	2.代办中心审批失败，关闭财务结算单，物流结算单
+	3.代办中心审批成功生成，修改账单状态，生成请款单
+	4.查询承运商开户行接口
+	5.交车单是否需要寄回逻辑优化
+	6.账单添加查看查看回单按钮
+	7.回单按钮展示
+
+注意：
+	bill表增加字段
+	代办中心id，代办任务创建时间，代办人id，回单url
+
+
+
+payType (支付类型): "运费"
+billNo (业务账单号): "ZD20200825164913"
+outSettlementNo (财务账单号): "CTMS202008261044699"
+paymentAmount (支付金额): "2400"
+accessoryUrl (附件): "https://cf.dawanju.net/pages/viewpage.action?pageId=60626289"
+carrierId (承运商Id): 100012(Long)
+
+
+交车单照片来源(1: tms后台，5：验车小程序，10：wms端同步)  wms 需要扩展成2个
+电子签章：5 和 wms的一个
+receipt
+
+
+
+待确认：
+	1.打款失败的现状  （保持现有逻辑不动，发生错误由财务数据订正）
+	2.默认的发起人 王宇
+https://hummer-m.maihaoche.net/bill/billLine/exportALLFeeDetail.json?bizKeyWord=&pageSize=20&pageNo=1&billId=513556&expenseTags=&billLineStatus=
+
+
+注意：
+	是否寄回在Excel中也要体现。
+	Hummer 增加 流程发起人配置
+
+上线注意：
+	表结构增加的字段同步到线上
+	流程发起人配置
+	监听审批流消息配置
+	fiat 流程详情url同步到Apollo
+如下：
+hummer.workflowUser=王宇
+fiat.urlPrefix=https://fiat.maihaoche.com
+workflow.mq.carrierPrice.consumerGroup=hummer_carrierPrice_process_group_online
+
+
+
+
+
+周一确：
+	1.wms电子签章接口的信息
+	2.调用财务请款单参数
+
+分支：
+jac：feature/tms_cost_online_guomaoyang20200918
+hummer：feature/tms_cost_online_guomaoyang20200918
+mclaren：feature/tms_cost_online_guomaoyang20200919
+ds  :  origin/hotfix/tms_yfjs_guapi_20200917
+fiat : feature/carrierFreight_lianhua_20200921
+
+
+配置：
+hummer.workflowUser=桃子
+fiat.urlPrefix=https://fiat-o.maihaoche.net
+workflow.mq.carrierPrice.consumerGroup=hummer_carrierPrice_process_group_online
+
+
+用户确认：https://saber-m.maihaoche.net/api/foton/bill/userAccept.json?billId=514857
+saber生成账单按钮：https://saber-m.maihaoche.net/api/foton/bill/generateSignature.json?billId=514859
+确认签章：https://saber-m.maihaoche.net/api/jac/signatures/
+
+,100350
+182301
+
+联调注意问题：
+承运商是否在必须签章列表? tms_system_config 字段 MUST_SIGNATURE_CARRIER_LIST
+是否有签章人? tms_carrier_signer
+承运商账户问题？ tms_carrier.receive_consumer_id
+
+# 查询可以结算的SQL
+SELECT DISTINCT
+	transport_order_id 
+FROM
+	tms_transport_car 
+WHERE
+	(
+		STATUS = 1 
+		AND car_transport_status <> 10 
+		AND shipping_time BETWEEN '2020-09-01 00:00:00'
+		AND '2020-10-01 00:00:00'
+		AND carrier_settlement_status = 0 
+		AND car_transport_status = 9 
+		AND img_delivery IS NOT NULL 
+		AND img_delivery <> '' 
+	AND pod_status = 4 
+	)
+
+SELECT
+	car_id,
+	car_transport_status,
+	shipping_time,
+	carrier_settlement_status,
+	car_transport_status,
+	img_delivery,
+	pod_status 
+FROM
+	tms_transport_car 
+WHERE
+	transport_order_id = '15692'
+
+
+提测问题：
+	确认账单：userAccept.json (非必须签章承运商走的逻辑)
+	tms_transport_car.pod_status: 4，saber后台交车单签章
+	tms_trnasport_order.constract_status: 15  saber后台运单签章
+
+
+预发测试：
+	1.hummer配置问题
+		hummer.workflowUser=郭茂洋
+		fiat.urlPrefix=https://fiat-pre.maihaoche.com
+		workflow.mq.carrierPrice.consumerGroup=hummer_carrierPrice_process_group_online
+	2.表结构修改
+		tms_bill增加：
+			work_flow_id
+			work_flow_create_time
+			receipt_url
+
+上线准备：
+	1.hummer配置问题
+		hummer.workflowUser=王也
+		fiat.urlPrefix=https://fiat.maihaoche.com
+		workflow.mq.carrierPrice.consumerGroup=hummer_carrierPrice_process_group_online
+	2.表结构修改
+		tms_bill增加：
+			work_flow_id
+			work_flow_create_time
+			receipt_url
+	3.hummer,mclaren 正式版本修改
+	版本：JAC -> hummer -> mclaren
+注意：
+	发布项目： hummer，mclaren, jac, fiat, ds, hummer前端
+
+hummer: release/tms_cost_online_guomaoyang20200927
+jac: release/tms_cost_online_guomaoyang20200927
+mclaren: release/tms_cost_online_guomaoyang20200927

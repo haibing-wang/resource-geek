@@ -1,0 +1,112 @@
+会员需求
+
+问题：
+	1.一期会员已经做成什么样子了？表结构、所在应用...
+	2.二期对会员、权益的体系设计如何对一期功能进行兼容。
+	3.
+
+
+问题：
+	1.权益状态待生效是否可以去掉，以后会有发放可未来使用的权益吗?
+	2.权益有效期目前是按照会员的有效期设置，还是按照权益模板里的来。
+	3.会员升级之后原先的权益是否干掉。
+
+
+
+注意：
+	1.增加配置消息配置: 
+    	lite.rights.topic = topic_lite_vip_rights
+    	lite.rights.consumerGroup = lite_rights_group
+    	autoActivateVipGrade.days = 45
+    	activateVip.timeDiffMinute = 15
+    	rightsPage.isShowToUsedButton = 1
+    2.上线前需要初始化权益种类表中的数据（b2b_vip_rights_category）
+    3.消息的topic看下是否要先配置到系统中
+
+
+
+消息：
+	权益余额是否消费MQ
+	topic: topic_lite_vip_rights
+	tag: consume_rights
+	消息体：com.mhc.lite.api.message.ConsumeRightsMessage
+
+	会员激活通知
+	topic: topic_lite_vip_rights
+	tag: vip_activate_notice
+	消息体：com.mhc.lite.api.message.VipActivateNoticeMessage
+
+
+lite：feature/vip_management20210318
+polestar：feature/vip_management20210318
+gw-mini：feature/vip_management20210318
+
+
+分支：lite：feature/vip_management20210318
+<dependency>
+  <groupId>com.mhc.lite</groupId>
+  <artifactId>lite-api</artifactId>
+  <version>2.4.2-SNAPSHOT</version>
+</dependency>
+
+release:
+lite: release/vip_management20210426
+polestar: release/vip_management20210426
+gw-mini: release/vip_management20210426
+
+
+会员状态 0:预生成，1：等待生效，2：生效中，3：已过期，4：已失效
+0：预生成，1:待生效，2：未使用，3：生效中(无限次)，4：已使用，5：冻结中，6：已过期，7：已失效
+
+会员激活：
+单个ok 还未测升级的2中场景
+	1.激活对应的权益（状态，生效时间）
+	2.等级实例变为已激活
+	3.会员信息状态为 生效中，set生效方式，设置有效期
+	4.新增一条激活状态的会员变更记录
+	5.修改开通记录为已激活
+	6.解锁客户的余额信息
+冻结权益：
+	1.将权益状态改为已冻结并设置业务单号
+	2.冻结部分余额，并生成冻结记录
+
+解冻权益：
+	1.冻结权益变为可用，清空业务单号
+	2.余额回滚，生成余额变更记录
+
+会员状态： 0：预生成，1：等待生效，2：生效中，3：已过期，4：已失效
+
+等级实例： 状态（0：未激活，10：已激活，20:已过期 30：部分失效 40：已失效）
+
+
+
+#清除公司会员信息
+
+# 删除权益包实例
+delete from b2b_vip_rights_package_ins where  vip_id = (SELECT id from b2b_vip_management where partner_id=10341);
+# 删除权益实例
+delete from b2b_vip_rights_ins where  partner_id=10341;
+# 删除等级实例
+delete from b2b_vip_grade_ins where vip_id = (SELECT id from b2b_vip_management where partner_id=10341);
+# 会员状态变更记录
+delete from b2b_vip_management_operate where  partner_id=10341;
+
+# 删除会员表
+delete from b2b_vip_management where  partner_id=10341;
+# 删除会员开通账单记录表
+delete from b2b_vip_management_bill_record where  partner_id=10341;
+# 会员合同签约记录表
+delete from b2b_vip_management_contract_sign where  partner_id=10341;
+# 会员开通记录表
+delete from b2b_vip_management_grant where  partner_id=10341;
+
+# 公司余额表
+delete from b2b_partner_balance where  partner_id=10341;
+# 余额变更记录
+delete from b2b_partner_balance_change where  partner_id=10341;
+# 余额充值记录
+delete from b2b_partner_balance_recharge where  partner_id=10341;
+
+
+
+B2B_SEC_CODE_13_

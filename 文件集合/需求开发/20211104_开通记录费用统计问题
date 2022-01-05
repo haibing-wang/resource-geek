@@ -1,0 +1,42 @@
+
+SELECT * FROM `b2b_vip_management` where `partner_name` ='普宁市宝鹰汽车有限公司';
+
+
+SELECT * FROM `b2b_vip_grade_ins` where  `vip_id` =176 ;
+ LIMIT 20;
+SELECT * FROM `b2b_vip_management_grant`  where `partner_name` ='普宁市宝鹰汽车有限公司';
+ LIMIT 20;
+ SELECT * FROM `b2b_vip_grade_ins` where `effective_start_time`  is not null and `activate_type` is null;
+ SELECT 
+SELECT * FROM `b2b_vip_rights_ins` where `partner_name` ='普宁市宝鹰汽车有限公司';
+
+select * from b2b_vip_rights_ins where rights_package_ins_id = 179;
+
+select b.* from b2b_vip_management_grant a join b2b_vip_grade_ins b on a.vip_grade_ins_id = b.id where a.`status` = 1 and b.status in (2);
+
+
+select DISTINCT(partner_id) from b2b_vip_management_grant where grant_type = 1 and is_deleted = 0 and `status` = 1;
+
+select a.partner_name,a.`status`,b.grade_name,b.`status` gradeStatus from b2b_vip_management a  join b2b_vip_grade_ins b on a.id = b.vip_id where a.partner_id in (select DISTINCT(partner_id) from b2b_vip_management_grant where grant_type = 1 and is_deleted = 0 and `status` = 1) order by a.partner_name; 
+
+
+
+SELECT
+	b.partner_name,
+	b.`status` vip_status,
+	a.grade_name,
+	a.`status` grade_status ,
+	c.vip_management_grant_no,
+	c.`status` grant_status 
+FROM
+	b2b_vip_grade_ins a
+	JOIN b2b_vip_management b ON a.vip_id = b.id 
+	join b2b_vip_management_grant c on a.id = c.vip_grade_ins_id
+WHERE
+	a.`status` = 2 
+ORDER BY
+	b.partner_name;
+	
+-- 根据公司查询等级实例
+select * from b2b_vip_grade_ins where vip_id in (select id from b2b_vip_management where partner_name = '义乌市鑫三盛汽车销售有限公司');
+	

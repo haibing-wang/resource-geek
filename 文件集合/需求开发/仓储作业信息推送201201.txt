@@ -1,0 +1,76 @@
+
+prd：https://cf.dawanju.net/pages/viewpage.action?pageId=60632847
+
+完成出库口子
+1.库管助手
+2.取消部分出库车辆导致出库单完成（job）不需要了
+
+发送三个消息的接口样例：com.mhc.mclaren.ao.impl.WHApplAOImpl#sendAllMsg
+出库单状态枚举：WmsOutWarehouseStatusEnum
+
+完成出库发送消息需要修改的方法：com.mhc.mclaren.ao.impl.DepartFromWarehouseAOImpl#updatePickLetter
+获取签章人接口：com.mhc.mclaren.ao.AllotSigningAO#getB2bUserResByCustomerId	
+
+出库消息：
+	目前只在完成出库行为时，并且出库单所有车已经完成出库，出库单状态变为已完成时触发发送消息。
+	1.校验出库单类型，非标出库和散客出库不发送
+	2.发送对象：出库单申请人和签章人，两者是同一个人只发送一次
+	3.消息类型：短信、app站内信、app推送
+
+
+出险关联表：wms_car_ins
+
+
+# 查询有出险和冻结的公司id（这些公司不发消息）
+SELECT 
+	a.customer_id 
+FROM
+	wms_car a
+	JOIN wms_car_ins b ON a.wms_car_id = b.car_id 
+WHERE
+	b.`status` = 1 
+	AND a.`status` = 1 
+	AND a.customer_id IS NOT NULL UNION
+SELECT 
+	customer_id 
+FROM
+	wms_car 
+WHERE
+	STATUS = 1 
+	AND frozen_state = 1 
+	AND customer_id IS NOT NULL
+
+获取企业所有用户：com.mhc.lite.api.PartnerFacade#getPartnerStaff
+
+每周盘点消息：
+	关联cc_car 只查个人物权
+	1.以partnerID分组筛选出相应的在库车数量
+	2.然后查询有出险和冻结的公司，将这些公司过滤出去
+	3.剩下的公司就是需要发送信息的公司，
+	4.遍历待发企业获取所有用户发送消息。
+
+
+提车完成消息模板：
+您#time#在#warehouseName#发起的#modelName#等#count#台车的提车申请，提车人#contactName#，已完成提车出库。
+
+短信：mclaren:complete_all_out_warehouse_sms，5fc6287dafb8893b624fa621
+站内信：mclaren:complete_all_out_warehouse_msg，5fc629d5afb8893b624fa624
+推送：mclaren:complete_all_out_warehouse_push，5fc62960afb8893b624fa623
+
+盘点消息模板：
+截止今日17点，您的在库车辆总数为#quantity#台；本周已完成全部车辆盘点，感谢您对卖好车仓储的支持！
+
+短信：mclaren:every_week_take_stock_sms  5fc76218afb8893b624fa625
+站内信：mclaren:every_week_take_stock_msg 5fc7626dafb8893b624fa627
+推送：mclaren:every_week_take_stock_push 5fc762a2afb8893b624fa628
+
+上线注意：
+	1.配置信息模板，2种消息模板
+	2.非标客户的相关接口等非标功能上线后加上
+	3.检查是否是我的车辆新页面
+	4.定时任务时间设置，profile 中吧pre去掉
+	5.盘点代码只发送给测试公司，上线后去除
+	6.英菲尼迪正式包，发布英菲尼迪
+
+
+modelName_奥迪 30周年年型 35 TFSI 运动型|contactName_郭茂洋|count_1|time_2020-12-03 15:33:02|warehouseName_桃子仓库

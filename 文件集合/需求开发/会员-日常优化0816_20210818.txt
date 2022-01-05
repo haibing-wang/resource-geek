@@ -1,0 +1,46 @@
+功能开发
+	1.开通记录（无业务经理）72小时扫描机制
+	2.开通记录页面增加 当前业务经理
+	3.开通记录新增维护业务经理按钮
+	4.充值记录列表新增 维护业务经理 按钮
+	6.开通记录页面重构
+
+开通记录重置状态：
+	1.待支付
+	2.支付中 （bill_record状态）
+	3.已支付
+	4.已取消
+
+余额变更记录查询-干掉
+
+
+代办事项：
+	1.修改rights_ins表的备注
+
+
+B2bVipManagementGrant
+
+问题：
+	1.维护业务经理维度是开通记录还是公司？
+	2.弹窗是个输入框还是一个的模糊查询列表？
+	3.扫描机制必须是72小时后扫描一次吗？
+
+	4.状态的查询还有个bug要处理
+
+新增接口：
+	1.查询业务经理接口
+	https://yapi.maihaoche.net/project/501/interface/api/75499
+
+	2.编辑“开通记录/充值记录”业务经理接口
+	https://yapi.maihaoche.net/project/501/interface/api/75498
+
+修改接口：
+	1.开通记录列表查询
+	https://yapi.maihaoche.net/project/501/interface/api/59053
+	返回值新增字段：currManagerInfo（当前业务经理信息）、buttons（按钮权限列表）
+	“编辑业务经理”按钮权限代码 = “managerEditor”；
+
+	2.余额变更记录查询
+	https://yapi.maihaoche.net/project/501/interface/api/61428
+	返回值新增字段：buttons（按钮权限列表）
+	“编辑业务经理”按钮权限代码 = “managerEditor”；

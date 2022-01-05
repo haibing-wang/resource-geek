@@ -1,0 +1,126 @@
+
+1.新增物流交接行为
+2.车辆详情增加查看信交接信息接口(WMS后台和库管助手)
+3.生成电子信息采集表时保存钥匙数量和验车结果接口
+4.物流交接行为是否跳过检验接口
+5.获取交接模块钥匙数量接口
+6.生成入库单证审核接口
+
+pc车辆详情：inWarehouse/carDetail.json 增加交接信息
+	
+库管助手车辆详情：/wms/behavior/helper/getCarDetail 增加交接信息
+
+物流交接行为校验接口
+
+纸质收车凭证上传接口
+
+保存交接信息接口
+
+获取交接信息钥匙数量接口
+
+交接票证审核相关接口
+
+验证码redis：EsignCode
+/inWarehouse/carDetail.json
+
+VNNRGJK69AC0BBE3E
+taskInstanceId": 441532,
+
+{
+	"imgUrl": "https://img.maihaoche.com/EFFD1F33-2284-4118-BCB4-A7D60D1DFFEC.jpg",
+	"taskInstaces": [{
+		"behaviorId": 9,
+		"wmsCarId": 203722,
+		"taskId": 441532,
+		"taskTemplateNo": "RWMB000084"
+	}]
+}
+
+
+批量电子入库信息采集表：/wms/behavior/batchDigitCheckCreate
+{
+	"contractId": "1323160396900392962",
+	"staffVerifyCode": "891552",
+	"customerVerifyCode": "187601",
+	"taskInstaces": [{
+		"behaviorId": 9,
+		"wmsCarId": 203546,
+		"taskId": 422749,
+		"taskTemplateNo": "RWMB000084"
+	}]
+}
+
+上传纸质入库信息采集表：
+https://gw-cullinan-u.maihaoche.net/wms/behavior/uploadCustomImg
+
+{
+	"carIdList": [203505],
+	"imgUrl": "https://img.maihaoche.com/1A1A4BF2-FB49-423B-83D9-423155F4E86A.jpg",
+	"wmsCarId": 203505,
+	"taskId": 421877,
+	"behaviorId": 448112
+}
+上传电子入库信息采集表
+/wms/behavior/digitCheckCreate
+{
+	"contractId": "1323176244245512193",
+	"staffVerifyCode": "361210",
+	"customerVerifyCode": "180772",
+	"taskId": 422762,
+	"behaviorId": 449323,
+	"wmsCarId": 203552
+}
+批量电子收车凭证：
+https://gw-cullinan-m.maihaoche.net/wms/behavior/batchGenerateReceiveCarReceipt
+{
+	"contractId": "1323182795047911426",
+	"staffVerifyCode": "971926",
+	"customerVerifyCode": "245522",
+	"taskInstaces": [{
+		"behaviorId": 9,
+		"wmsCarId": 203553,
+		"taskId": 422765,
+		"taskTemplateNo": "RWMB000084"
+	}]
+}
+
+单个电子收车凭证：
+wms/behavior/generateReceiveCarReceipt
+
+
+generatePaperReceiveCarReceipt
+
+
+纸质收成凭证 -> wms_warehouse_warrant_info
+纸质入库采集表 -> wms_car_photo
+
+物流交接校验接口：
+	/wms/behavior/handoverCheck
+
+保存钥匙和验车信息接口
+	/wms/behavior/helper/preCreateHandoverInfo
+
+操作人员（库管）operator
+单证上传时间、uploadTime
+钥匙数量、keyNum
+验车结果、checkResult：1.正常，2.异常
+异常备注、massLossMemo
+交接单证名称、pictureType (直接传名字)
+单证图片、picture (图片链接)
+
+今日毕：
+	1.车辆详情展示交接信息2个接口
+	2.查询锁定钥匙数量
+	3.联调关联订单需求接口
+
+注意事项：
+	0.wms_warehouse_warrant_info入库信息表不需要增加那2个字段了
+	1.新增一个批量保存钥匙 验车信息的接口
+	2.保存后修改验车信息 后台
+	3.更新验车信息
+
+上线注意：
+	1.dayu_task_action_type 新增物流交接行为
+	2.入库任务增加物流交接行为
+	INSERT into dayu_task_action_type (action_type_group,action_type_code,action_type_name)  VALUES (1,'WU_LIU_JIAO_JIE','物流交接');
+	3.正式包

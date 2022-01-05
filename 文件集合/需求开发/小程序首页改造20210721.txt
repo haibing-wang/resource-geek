@@ -1,0 +1,22 @@
+订单相关接口：
+	1.提交订单
+	2.我的页面改造 （）
+	3.订单列表
+	4.订单详情 （无）
+
+新增配置：
+	# 机器人token
+	wx.group.submitOrder-webhook-key = 7ebe218e-85b4-49a5-8be9-a427dcf76928
+	# 客服二维码链接
+	wx.url.customer-service-QRcode = https://img.maihaoche.com/wms/checkIn/o_1fb49d60m1tr1qgt24p5c7kcp2u_%E5%AE%A2%E6%9C%8D%E4%BA%8C%E7%BB%B4%E7%A0%81.png
+
+线上配置：
+	wx.group.submitOrder-webhook-key = 21415a37-0512-4bc6-b796-690a1e581dc9
+	wx.url.customer-service-QRcode = https://img.maihaoche.com/0F00285D-CC82-4E2C-975B-3338B1DBC752.png
+
+
+上线注意：
+	1.修改机器人token
+	2.修改二维码链接
+	3.lite发下，配置已发布
+

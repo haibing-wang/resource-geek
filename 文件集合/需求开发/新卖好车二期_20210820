@@ -1,0 +1,71 @@
+Request URL: https://hummer-m.maihaoche.net/transportCar/batchShip.json
+{transportCarIds: ["102356051"], shippingTime: "2021-08-20 14:28",…}
+predictArrivalTime: "2021-08-22 14:28"
+shippingTime: "2021-08-20 14:28"
+transportCarIds: ["102356051"]
+
+
+到达
+Request URL: https://hummer-m.maihaoche.net/transportCar/batchArrive.json
+{transportCarIds: ["102356051"], arrivalTime: "2021-08-20 14:30"}
+arrivalTime: "2021-08-20 14:30"
+transportCarIds: ["102356051"]
+
+
+在途位置编辑
+Request URL: https://hummer-m.maihaoche.net/transportOrder/car/batchEdit.json
+
+
+
+1.提车  在途   到达 的所有入口
+2.在途位置查询
+
+1.金融单可以对应多个物流单怎么搞？
+2.在途位置不一样
+
+
+// 所以车辆已提车
+com.mhc.hummer.api.model.message.BizOrderCarAllShipMessage  // 现成的 直接可用
+
+// 所有车辆已到达
+com.mhc.hummer.api.model.message.BizOrderCarAllArrivedMessage // 非极速代采可用
+
+// 极速代采所有车辆到达消息
+注： 极速代采的全部到达消息，在通知签收阶段发送
+com.mhc.hummer.core.ao.impl.ITransportNotifyCarAOImpl#batchNoticeSign
+
+全部提车完成消息
+topic：tp_wms
+tag：bizOrderAllCarShippedForNewMHC
+消息体：com.mhc.hummer.api.model.message.BizOrderCarAllShipForNewMHCMessage
+
+全部到达消息
+topic：tp_wms
+tag：bizOrderCarAllArrivedMessageForNewMHC
+消息体：com.mhc.hummer.api.model.message.BizOrderCarAllArrivedForNewMHCMessage
+
+
+// 查询在途位置
+com.mhc.hummer.api.service.InTransitRecordService#getInTransitRecords
+
+// 关闭物流
+com.mhc.hummer.core.ao.impl.TransportOrderAOImpl#confirmCloseLogistics
+com.mhc.hummer.core.ao.impl.TransportOrderAOImpl#getCloseTransportInfo
+
+// 无物流完成
+com.mhc.hummer.core.ao.impl.TmsTransportCarAOImpl#noLogisticsFinish
+
+
+增加操作日志
+新增物流2个状态查询接口
+
+
+需要接口：
+	运单状态同步
+		1.全部提车发送状态变更消息
+		2.全部到达发送状态变更消息
+	物流物流信息查询
+		3.查询物流运单信息
+	会员
+		4.新会员群体支持
+		5.前端接口返回新群体会员

@@ -1,0 +1,50 @@
+
+# 根据cc_car_id查询车辆照片信息sql
+SELECT t3.ccCarId,
+       t3.vin,
+       t3.wmsCarId,
+       t1.configure_type_id photoType,
+       t2.configure_type photoTypeName,
+       t1.img_url imgUrl
+  FROM wms_car_photo t1 JOIN wms_car_photo_configure t2 ON t1.configure_type_id= t2.configure_type_id join(
+SELECT a.wms_car_id wmsCarId, b.car_unique vin, b.car_id ccCarId
+  FROM wms_car a JOIN cc_car b ON a.cc_car_id= b.car_id
+ WHERE a.store_status= 10 # 在库状态
+   AND a.warehouse_id= 100001518 # 仓库id
+   AND b.asset_right= 100015548 # customerid
+   AND b.car_id IN(12312123,12312322) # ccCarId
+   AND a.status= 1
+   AND b.is_deleted= 0) t3 on t1.car_id= t3.wmsCarId
+ where t1.status= 1
+order by t3.ccCarId,
+         t1.configure_type_id;
+
+
+# 根据车架号查询sql
+SELECT t3.ccCarId,
+       t3.vin,
+       t3.wmsCarId,
+       t1.configure_type_id photoType,
+       t2.configure_type photoTypeName,
+       t1.img_url imgUrl
+  FROM wms_car_photo t1 JOIN wms_car_photo_configure t2 ON t1.configure_type_id= t2.configure_type_id join(
+SELECT a.wms_car_id wmsCarId, b.car_unique vin, b.car_id ccCarId
+  FROM wms_car a JOIN cc_car b ON a.cc_car_id= b.car_id
+ WHERE a.store_status= 10 # 在库状态
+   AND a.warehouse_id= 100001518 # 仓库id
+   AND b.asset_right= 100015548 # customerid
+   AND b.car_unique IN('JN8BY2NY1L9307385', 'JN8BY2NY5L9312329') # 车架号
+   AND a.status= 1
+   AND b.is_deleted= 0) t3 on t1.car_id= t3.wmsCarId
+ where t1.status= 1
+order by t3.ccCarId,
+         t1.configure_type_id;
+
+# 查询cc_car_id 
+select car_id  FROM cc_car WHERE car_unique in('JN8BY2NY1L9307385'
+,'JTMHU01J0L5168436')AND asset_right= 100015548
+
+
+# 请求url get请求，注意请求的时候加上cookie  使用postman 点击send and download 按钮
+https://wms.maihaoche.com/download/carphotos.json?warehouseId=100001518&customerId=100015548&status=10&ccCarids=2206354,2202106,2197128
+

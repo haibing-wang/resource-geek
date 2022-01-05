@@ -1,0 +1,93 @@
+提交注意事项：
+	1.数据库插入机器人的token
+	2.依赖包的版本，迈腾 迈凯伦 eye 都需要关注，都需改为正式版
+	3.发布顺序：迈腾->迈凯伦->eye
+	3.修改定时任务时间 目前是每 5，6分钟跑一次（已修改）
+	
+
+新建机器人 线上环境
+
+gps绑定提醒
+https://oapi.dingtalk.com/robot/send?access_token=2af7703321a1f0cee232201af983044d88708dfcfec107e49c8c8742ca23ff93
+
+gps绑定统计
+https://oapi.dingtalk.com/robot/send?access_token=b8b1ac74852f5adb65e46e78bbe07d9bce07fa0e6e1e812f25428fa4f8c93fd1
+
+
+
+#######################################初始化机器人token SQL
+
+#待绑提醒
+INSERT INTO wms_system_params (param_group,
+param_key,
+param_value,
+param_desc,
+STATUS,
+gmt_create,
+gmt_modified)
+VALUES
+	( "ROBOT", "JIANHANG_WAIT_BIND_NOTICE", "2af7703321a1f0cee232201af983044d88708dfcfec107e49c8c8742ca23ff93", "建行在贷待绑GPS通知", 1, now( ), now( ) );
+	
+#统计
+INSERT INTO wms_system_params (param_group,
+param_key,
+param_value,
+param_desc,
+STATUS,
+gmt_create,
+gmt_modified)
+VALUES
+	( "ROBOT", "JIANHANG_STAT_NOTICE", "b8b1ac74852f5adb65e46e78bbe07d9bce07fa0e6e1e812f25428fa4f8c93fd1", "GPS绑定统计", 1, now( ), now( ) );
+
+#######################################
+
+绑定提醒：
+
+建行在贷待绑GPS通知	有建行在贷车辆待绑定GPS，请及时处理！
+建行在贷待绑GPS通知	当前无待绑定GPS车辆！	  text类型
+
+绑定统计：
+
+GPS绑定统计	建行在贷车辆GPS绑定统计
+GPS绑定统计	当前无建行待绑车辆或建行已绑车辆。 text类型
+
+
+
+
+
+
+https://oapi.dingtalk.com/robot/send?access_token=SECebc20985dc522b0b783e9fdf4242af9ac1408183dbb4f47a7bd56cbf882da99e
+https://oapi.dingtalk.com/robot/send?access_token=a3b3b378b1561b9dd4abe40b5ab83bbaad73b2872da89d91be15ff073068dd2f
+
+https://oapi.dingtalk.com/robot/send?access_token=e2b742a4e8b4a01f85c1781adf98842e8a336f4a97f5007d18e0b200b224faf9
+### 有建行在贷车辆待绑定GPS，请及时处理！
+---
+#### 未查到相应大区
+- 大头测试仓2号
+车架号：4E126L5U2FWP97413，SXGCUHY708ETU2KM8
+---asdasd
+
+
+
+#绑定GPS接口
+
+绑定需要调用的接口
+com.mhc.eye.core.biz.service.remote.impl.GpsFacadeImpl#bindGps 
+
+待确定：com.mhc.eye.core.biz.service.remote.impl.EquipmentBindCarFacadeImpl#addEquipmentBindCar
+
+解绑需要调用的接口：
+com.mhc.eye.core.biz.service.remote.impl.GpsFacadeImpl#unbindGps
+com.mhc.eye.core.biz.service.remote.impl.EquipmentBindCarFacadeImpl#unbindEquipCar
+
+
+北京中都格罗唯视物流有限公司整车物流2.0系统项目时间管理的研究
+
+
+新建机器人
+
+gps绑定提醒
+https://oapi.dingtalk.com/robot/send?access_token=1a5dcba30cb313a6015966cda83959e814f3f604a118fa45462f1996cd7276b4
+
+gps绑定统计
+https://oapi.dingtalk.com/robot/send?access_token=443f14dfd3b3903e4a6880d5a550cc2ea0b98eb04e474e8a706bcc7c59193011

@@ -1,0 +1,27 @@
+CRM内支持客户经理维护商品
+https://cf.dawanju.net/pages/viewpage.action?pageId=60636355
+
+开发接口：
+	1.商品维护列表查询及条件筛选
+	2.商品详情查询接口
+	3.商品详情编辑
+	4.下架接口
+
+https://faw-pre.maihaoche.com/carCenter/carList/mode/1/user/2
+
+注意：
+	1.部分接口需要再妮娜代码合过来之后编写(修改商品记录，下架记录)
+	2.
+
+涉及项目：
+	eado：feature/maintain_goods_gmy_20201211
+	chrysler：feature/maintain_goods_gmy_20201221
+
+realse:
+	eado：release/goods_gmy_20201229
+	chrysler：release/maintain_goods_gmy_20201228
+
+上线注意：
+	1.eado正式包，chrysler依赖
+	2.crown正式包，eado依赖
+	

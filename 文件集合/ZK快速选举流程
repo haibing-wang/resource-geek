@@ -1,0 +1,97 @@
+ZK快速选举流程
+	1.zxid 
+
+zkserver 每接收到一个写请求都会自增自己的zxid
+
+触发领导选举的场景：
+	1.集群启动的时候
+	2.leader挂掉的时候
+	3.超过一半的follower挂掉也会进行领导选举（虽然选不出来）
+
+选举应用层和传输层的概念：
+	1.QuorumCnxManager 理解为传输层 里边有sendWorker recvWorker
+	2.
+
+核心选举逻辑：
+	FastLeaderElection#lookForLeader
+
+	投票箱：Map<Long, Vote> recvset = new HashMap<Long, Vote>();
+
+核心逻辑梳理：
+	1.首先将自己的logicalclock（逻辑时钟）+1
+	2.先将选票投给自己
+	3.将自己的选票发送给所有的参与者（包括自己和其他非观察者角色），将选票放入sendqueue
+	ToSend notmsg = new ToSend(
+	    ToSend.mType.notification, // 投票
+	    proposedLeader,   // 本张选票当前投给了哪个节点
+	    proposedZxid,     // 本张选票当前投给了的那个节点上的最大的zxid
+	    logicalclock.get(),  // 本张选票的逻辑时钟
+	    QuorumPeer.ServerState.LOOKING,  // 本节点当前的状态
+	    sid,  // 把本张选票发给sid
+	    proposedEpoch,  // 本张选票当前投给了的那个节点上的epoch
+	    qv.toString().getBytes());
+	4.进入while循环中
+		4.1 从recvqueue中获得投票（如果没有则延时0.2秒获取）
+		4.2 先走最正常的逻辑，获得选票并且通过校验
+		4.3 当前节点为LOOKING状态，对比选票的electionEpoch和当前的
+		4.4 如果选票的electionEpoch大于自己，将自己的electionEpoch改为和选票的一致，清空自己的投票箱；将别人的选票和自己进行PK，PK逻辑如下，先比较epoch，大的赢，如果相等比较zxid，大的赢，zxid也相等的话比较sid（myid），大的赢。如果别的选票获胜则修改自己的提议为获胜的选票。然后发送选票
+		4.5 如果选票的epoch小于自己，则忽略该选票并且 break该switch
+		4.6 如果两者epoch相等，进行和4.4一样的pk逻辑 如果别人的选票获胜，则修改自己的提议并且重新发送自己的选票
+		4.7 进行完4.4~4.6的if else逻辑之后，将这个别人的选票放入投票箱。
+		4.8 然后遍历投票箱，找到和自己相同的投票放入一个集合中
+		4.9 然后验证该集合是否过半，如果过半则相当与选出来了一个准leader 注意这个准字
+		4.9 选到准leader之后还要进行判断，while循环从recvqueue中获取看看有无别的选票，如果获取到的话则再跟自己的选票进行pk，pk逻辑都一样。如果pk之后是别人的选票获胜。则吧这个选票再放入recvqueue，然后break 这个switch（这个很容易想明白，相当于重新走上边的流程）
+		4.9 如果在这个while中没有获取到新的选票，可以理解为其他的zk节点都都已经达成一致，上边选出的准leader就可以被推举为真正的leader，还没完，给自己设置state，就是判断自己选的sid是不是自己，是的话将自己改为LEADING状态，然后将自己最终的选票return；
+		注意：PK比较的Epoch不是electionEpoch，是那个需要持久化的peerepoch
+
+
+应用层和传输层的线程工作流程：
+
+应用层WorkerSender的流程：
+	1.在进行领导选举的主逻辑时，先投给自己一票，然后把这个票发送给所有的参与者(包括自己)；sendqueue.offer(toSend);toSend中包含的信息在此不做赘述
+	2.应用层中的WorkerSender线程会不停的从sendqueue获取信息，将ToSend转成ByteBuffer发送给QuorumCnxManager(传输层)
+	3.传输层中的处理，如果是发送给自己的选票直接放到recvQueue中，不用走网络传输。如果是其他sid则存入queueSendMap，queueSendMap.computeIfAbsent(sid,queue);
+
+WorkerReceiver处理流程：
+	1.首先他是一个线程，不停的从传输层的recvQueue中获取数据，解析数据转化为选票信息
+	2.校验选票信息是否是参与者，如果是ObServe的选票(虽然不可能)，则将自己选票信息发给他。
+	3.如果是正常的参与者信息，校验自己的状态是不是LOOKING，如果是的话将这个选票信息放到recvqueue，然后再判断对方是不是LOOKING状态并且electionEpoch小于自己，是的话则将自己的选票发送给对方
+	4.如果自己不是LOOKING状态而发送选票的sid是LOOKING状态，此时可能意味着领导已经选举来了，而发送选票的服务器可能是后启动的。符合这个判断时只需要将本服务器的选票结果告知给对方。
+	
+传输层：
+SendWorker:
+	senderWorkerMap中每个sid都会对应一个SendWorker，SendWorker不停的从对应的queue中获得数据，然后发送给对应的zkServer。
+	被初始化的2个点：
+		1.在当前zkServer启动时候，传输层Listener.start()被调用，此时ListenerHandler会监听领导选举的port，这个时候如果监听到有其他的zk节点连接，通过校验另个sid > 当前的sid，将此Socket封装到SendWorker和RecvWorker(封装过程详见代码)，然后放到senderWorkerMap<Long, SendWorker>中。
+		2.当前节点进行领导选举逻辑的时候，当前节点先投给自己一票，然后将这个选票放到sendqueue中发送给所有的参与者。应用层的WorkerSender线程会将队列中的消息发送给传输层，传输层将选票放到queueSendMap中，然后去判断是否跟对应的sid建立连接，没有建立连接则开启一个线程（QuorumConnectionReqThread）创建Socket连接，连接创建成功后则初始化该连接的SendWorker和RecvWorker然后放到senderWorkerMap<Long, SendWorker>中并启动这个2个线程。
+
+
+	RecvWorker:
+		不断的从inputStream中读取数据，读取成功之后将其封装为Message对象，并存入recvQueue中。
+		初始化时间节点和SendWorker一致。
+
+
+
+QuorumCnxManager.Listener.ListenerHandler 新版本支持多个领导选举端口，配置的每个端口会对应一个 ListenerHandler进行监听，ListenerHandler进行真正的监听逻辑，会讲传输层的SendWorker和RecvWorker初始化。
+
+客户端连接
+./zkCli.sh -server localhost:2181
+
+server启动
+./zkServer.sh start ../conf/zoo1.cfg
+
+
+
+
+
+
+
+#GRADLE
+GRADLE_HOME=/Users/mac/Dev/gradle-4.9
+PATH=$PATH:$GRADLE_HOME/bin
+export GRADLE_HOME GRADLE_USER_HOME PATH
+
+
+
+
+

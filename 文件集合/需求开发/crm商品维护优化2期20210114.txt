@@ -1,0 +1,30 @@
+crm商品维护优化2期
+https://cf.dawanju.net/pages/viewpage.action?pageId=60639254
+
+
+查看商品详情新增字段
+//返利
+private Long reducedPrice;
+//部门编号
+private Integer departmentId;
+https://yapi.maihaoche.net/project/446/interface/api/57753
+
+
+商品详情修改新增字段
+sellerPriceType	售价类型
+departmentId	部门编号
+reducedPrice	返利
+https://yapi.maihaoche.net/project/446/interface/api/57761
+
+
+获取部门信息接口
+https://yapi.maihaoche.net/project/446/interface/api/58123
+
+
+分支：
+	eado：hotfix/edit_gmy_20210114
+	chrysler：hotfix/goods_gmy_20210114
+
+上线注意：
+	eado正式包，chrysler依赖
+	

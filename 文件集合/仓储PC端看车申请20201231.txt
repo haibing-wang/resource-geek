@@ -1,0 +1,77 @@
+仓储PC端看车申请
+https://cf.dawanju.net/pages/viewpage.action?pageId=60637114
+
+
+不能看车的方法 WmsPickLetterServiceImpl#ManageCarModelVo
+app看车申请列表 	WmsPickLetterServiceImpl#queryPickCarListV5
+
+接口：
+	1.看车申请单列表查询
+	2.看车申请单详情
+	3.取消看车申请
+	4.申请看车列表
+	5.生成看车申请单
+	6.看车申请记录改造
+	7.库管助手看车验证
+
+
+问题：
+	1.看车验证会展示当前手机号所有的申请单，看车人数到低以哪个
+
+
+分支：
+	mclaren：feature/pc_car_gmy_20201231
+
+release分支：
+	mclaren：release/pc_car_gmy_20210108
+	gw-cullinan：release/pc_car_gmy_20210108
+
+上线注意：
+	1.mclaren 正式包
+
+
+
+
+极速代采后台申请看车
+https://cf.dawanju.net/pages/viewpage.action?pageId=60638140
+
+接口：
+	1.申请看车列表
+		1.根据sp运单号查询，获取唯一关联单号，通过关联单号查询入库单，通过入库单获取所有的wms_car
+	2.提交申请看车接口
+		1.直接调用原先接口生成看车申请单，并在Ferrari中保存操作记录
+		2.
+权限：
+	订单状态为
+	“待回款”  FINAL_WAIT_PAY
+	“回款中” FINAL_IN_PAY
+	“部分回款中”	PARTY_FINAL_PAY
+	“已回款完成”	FINAL_PAY_SUCCESS
+	“已完成” FINISH
+
+上线注意：
+	1.增加极速代采物权配置（partnerId可以为多个，用英文","隔开）
+INSERT INTO `db_b2b`.`wms_system_params` (  `param_group`, `param_key`, `param_value`, `param_desc`, `status`, `gmt_create`, `gmt_modified` )
+VALUES
+	( 'OPTION', 'SELL_CHECK_APPLY_CAR_PARTNER', '100017227', '极速代采默认看车公司', 1, NOW(), NOW() );
+
+	2.注意正式包，mclaren,ferrari 
+
+分支：
+	mclaren：feature/sp_car_gmy_20200108
+	Ferrari：feature/sp_car_gmy_20200108
+	Tesla：feature/sp_car_gmy_20200108
+	gw-cullinan：hotfix/ware_gmy_20210114
+
+release：
+	mclaren：release/sp_car_gmy_20210118
+	gw-cullinan：hotfix/ware_gmy_20210114
+	Ferrari：release/sp_car_gmy_20210118
+	Tesla-all：release/sp_car_gmy_20210118
+
+
+测试注意事项：
+	1.看车申请单写死为旺车公司
+	2.看车物权采用配置方式处理
+
+

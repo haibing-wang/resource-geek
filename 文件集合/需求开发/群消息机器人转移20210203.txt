@@ -1,0 +1,324 @@
+群消息机器人转移
+
+https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=9f552387-0113-4392-854f-dccbe7f3424f
+
+GPS低电、未激活预警  
+WMS技术消防群车辆出库通知群      
+多条待入库信息提示群  
+建行待绑GPS通知     
+留置车辆出库告警群   
+入库审核通知群      ok
+线上任务中心配置处理  
+钥匙柜动态密码通知群  
+钥匙取用审核通知     ok
+在库换车待处理通知
+
+仓库SOS报警群    
+RFID智能标签告警 
+盘点位置异常通知群
+钥匙柜告警通知   
+SAAS入库单审核拒绝通知
+监控疑问解答群     
+日结存相关通知     
+
+通知：
+mclaren:
+    com.mhc.mclaren.util.DingDingUtils#sendMessage(com.mhc.common.util.DingDingOAMessage, java.lang.String[])
+        指定了一个在库车辆视频抽检任务 
+        建库任务    
+        验车超时消息
+        WMS日常   
+        一个仓库已经建设完成，等待您的验收   
+        有待入库车辆，请及时查看
+        今日盘点工作开始了
+        待入库单已生成，请及时查看
+    com.mhc.mclaren.util.DingDingUtils#sendMarkdownMessage
+        天气预警
+        租金支付到期提醒
+        仓库租赁合同到期提醒
+
+    com.mhc.mclaren.ao.IDingDingService
+        入库单自动审核提醒
+        入库单待审核提醒
+        入库通知单编号 + "审核通过"
+        扫描超时未审核的入库单结束语
+        入库通知单审核拒绝
+        GPS绑定提醒
+        车辆盘点异常提醒
+        车辆出库通知
+        留置车辆告警
+        建行在贷待绑定GPS通知
+        gps绑定统计
+        钥匙取用待审核通知
+        钥匙审核通知
+        在库换车通知
+        GPS未激活预警
+        GPS低电量预警
+        钥匙取用审核拒绝
+    com.mhc.mclaren.ao.impl.NewMsgAOImpl#sendDingRobotMsg(java.lang.String, java.lang.String)
+        目前无重复车架号
+        车架号获取失败
+        辆车存在多条待入库单信息
+    com.camaro.message.service.MessageService#sendMessage
+        电子单据通知
+        条形码绑定审核不通过通知库管
+        待审核调拨单提醒
+        调拨审核完成后提醒
+        仓库修改通知
+        调整费用成功后通知
+        盘点告警通知
+        排班修改提示审核
+        钥匙取用审核拒绝通知
+        有待出库车辆通知
+
+
+
+
+eye：
+    钉钉告警 
+    com.mhc.eye.core.factory.entity.DingAlertMsgSender#asynSendMsg
+        处理移车任务上报
+        新增报警记录
+        新增设备自身告警记录
+    com.mhc.eye.core.util.DingDingMsgUtil#sendMarkDownByStaffId
+            电子工牌报警
+            置换任务超时告警
+            移车任务超时
+            置换任务超时
+            钥匙柜告警
+            测试钥匙柜告警
+    com.mhc.eye.core.util.DingDingMsgUtil#sendMarkDownByRobot
+            有钥匙柜后台密码生成，请关注使用状况
+            电子工牌报警
+            车辆移位超时未完成，请尽快处理
+            车辆置换任务超时未完成，请尽快处理
+            仓库钥匙柜断电或断网已修复!
+            钥匙未及时归还预警提示
+            仓库钥匙柜断电或断网
+
+koenigsegg:
+    com.koenigsegg.server.ao.impl.ProcApplAOImpl#cancelProcAppl 取消某个手续申请
+    com.koenigsegg.server.ao.impl.ReminderAOImpl.LimitTask#sendDingdingMsg  收取手续提醒
+    com.koenigsegg.server.task.CarRepeatLoanTask#run    重复做单通知
+    com.koenigsegg.server.task.FormalityApplyNoticeTask#sendMessage 手续钥匙邮寄提醒
+    com.koenigsegg.server.task.FormalityCancelTask#sendMessage 取消手续钥匙邮寄提醒
+    com.koenigsegg.server.task.NoticeWarehouseTask#sendMessageByManager  维护地址通知库管和相关人员/库管和总部运营维度发消息
+    com.koenigsegg.server.task.NoticeWarehouseTask#sendMessageByCharge  维护地址通知库管和相关人员/业务经理维度发送消息
+    com.koenigsegg.server.task.Scheduler#collection 催收手续
+    com.koenigsegg.server.task.SendDingDingMessageTask#run 仓库中车辆存在手续钥匙时发送消息给相关人员
+
+dayu：
+    com.mhc.dayu.core.biz.service.wms.impl.NotifyServiceImpl#notifyWarehouseLackTaskTemplate
+        仓库缺少配置任务模版
+
+
+auth_external_system_ref  存放wxid 和 dingId
+
+************注意
+
+修改配置文件：
+    koe：
+        # 新增(wms应用agentId 和 appId)
+        wx.wms.agentId = 1000006
+        wx.wms.appId = 359417315374141440
+        # 修改
+        mq.dingUserId.noticeDingUserId: 021901231939279916  # 改为微信id
+    mclaren：
+        # 新增配置文件
+        spring.wms.agentId：wms应用agentId添加（新增）
+
+        # 修改
+        wms.dingUser.receiver: 修改为微信id（信息接收人 大头）
+
+        wms.dingding.token：修改为新的群机器人token   （入库单审核）
+        wms.robot.webhook: 修改为新的群机器人token    (多条待入库单信息提示)
+        gps.dingDingRobot.token: 改为线上机器人token   （GPS绑定提醒）
+        stocktake.errorMsg.token：改为线上机器人token (车辆盘点异常提醒)
+        
+        #死代码
+        com.mhc.mclaren.ao.impl.WmsCarAOImpl#dailyFeeToken 换成线上的机器人token（日结存）
+        com.mhc.mclaren.ao.impl.WmsCarSettlementAOImpl#dailyFeeToken 换成线上的机器人token（日结存）
+        com.mhc.mclaren.ao.settlement.Impl.CarDailyFeeAOImpl#dailyFeeToken 换成线上的机器人token（日结存）
+
+        #数据库配置
+        SystemSwitchKeyEnum.CAR_DELIVERY_ROBOT:替换成wxtoken（车辆出库通知机器人）
+        SystemSwitchKeyEnum.CAR_IN_STORE_WARN: 替换成wxtoken（留置车辆告警机器人）
+        SystemSwitchKeyEnum.JIANHANG_WAIT_BIND_NOTICE:替换成wxtoken（建行待绑定GPS通知）
+        SystemSwitchKeyEnum.KEY_APPLY_CHECK_NOTICE：(钥匙申请审核通知)
+        SystemSwitchKeyEnum.REPLACE_INSTORAGE_NOTICE：(在库换车通知)
+        SystemSwitchKeyEnum.JIANHANG_STAT_NOTICE:（GPS绑定统计）
+        SystemSwitchKeyEnum.GPS_WARNNING_LOW_ELECT:（GPS低电量预警）
+        SystemSwitchKeyEnum.GPS_WARNNING_NOT_ACTIVE:（GPS未激活预警）
+    dayu:
+        # 配置文件修改
+        ambulance.dingDingRobot.needHandleToken  修改为线上微信机器人token
+
+
+注意：
+    1.koe，mclaren，gw-cullinan,dayu 的Camaro，Acura 正式版本 (完成)
+    2.koe写死的消息改回来 （完成）
+    3.gw-cullinan 修改Acura版本为最新，user需改为新版有wxId的 （完成）
+    4.com.mhc.mclaren.ao.settlement.Impl.SettlementAOImpl#NOTICE_NICK_NAEM  改回安仔 （完成）
+
+
+mclaren问题：
+    1.com.mhc.mclaren.ao.warehouse.impl.WarehouseExtAOImpl#validateCarOverTimeNotice dubbo接口，传来的就是钉钉id，eye那边调的，确认eye是否已经转换成wxId
+    2.日结存token 换成线上的
+
+
+#测试环境配置
+mclaren：
+    wms.dingding.token = f6191d81-0c00-49a9-81cd-442c051542b4
+    wms.robot.webhook = 6afca98d-8527-407d-83c5-49d1edd0bdb3
+    gps.dingDingRobot.token = 69126cea-68e9-49af-a59f-3b188a50ab5c
+    stocktake.errorMsg.token = 6478f573-ca25-48f2-9cc1-64e69610c803
+    wms.dingUser.receiver = um,YeXuWoShiYi
+
+
+    # 车辆出库通知机器人
+    update wms_system_params set param_value = 'bcbf703f-fe16-4151-9139-9ee3718f4a91',gmt_modified = NOW() where param_key = 'CAR_DELIVERY_ROBOT' AND `status` = 1;
+
+    # 留置车辆告警机器人
+    update wms_system_params set param_value = '577466f8-56ce-4121-a5f2-a32beeec9f36',gmt_modified = NOW() where param_key = 'CAR_IN_STORE_WARN' AND `status` = 1;
+
+    # 建行待绑定GPS通知 & GPS绑定统计
+    update wms_system_params set param_value = '12cfc9c7-4f94-4754-afc2-4ce671adf60b',gmt_modified = NOW() where param_key = 'JIANHANG_WAIT_BIND_NOTICE' AND `status` = 1;
+    update wms_system_params set param_value = '12cfc9c7-4f94-4754-afc2-4ce671adf60b',gmt_modified = NOW() where param_key = 'JIANHANG_STAT_NOTICE' AND `status` = 1;
+
+    # GPS低电量预警 & GPS未激活预警
+    update wms_system_params set param_value = 'bfb5a75b-047b-4dca-896a-e6218ab21326',gmt_modified = NOW() where param_key = 'GPS_WARNNING_LOW_ELECT' AND `status` = 1;
+    update wms_system_params set param_value = 'bfb5a75b-047b-4dca-896a-e6218ab21326',gmt_modified = NOW() where param_key = 'GPS_WARNNING_NOT_ACTIVE' AND `status` = 1;
+
+    # 钥匙申请审核通知
+    update wms_system_params set param_value = 'b5fe9246-5f7d-4b46-932e-25bf3be4d55d',gmt_modified = NOW() where param_key = 'KEY_APPLY_CHECK_NOTICE' AND `status` = 1;
+
+    # 在库换车通知
+    update wms_system_params set param_value = 'bb23b488-88f8-4efa-bcfe-a2ffb0d924f0',gmt_modified = NOW() where param_key = 'REPLACE_INSTORAGE_NOTICE' AND `status` = 1;
+dayu：
+    ambulance.dingDingRobot.needHandleToken=cf9a1810-b6ed-478d-a33b-82ef94885b37
+
+koe: hotfix/wx_robot_gmy_20210202
+dayu: hotfix/wx_robot_gmy_20210202
+mclaren: hotfix/wx_robot_gmy_20210202
+gw-cullinan: hotfix/wx_robot_gmy_20210202
+
+
+online配置：
+    koe：
+        # 新增
+        wx.wms.agentId = 1000019
+        wx.wms.appId = 2407798168104960
+        # 修改
+        mq.dingUserId.noticeDingUserId = hongcha 
+
+    dayu：
+        #修改
+        ambulance.dingDingRobot.needHandleToken = 1e8226a2-483f-4a27-865f-24f77aa21a2c
+
+    mclaren：
+        # 新增
+        spring.wms.agentId = 1000019
+
+        #修改
+        wms.dingding.token = 96dc7a4f-4685-48e1-b2f7-f382600119df
+        wms.robot.webhook = 01b61f71-132d-487d-83a3-1284fc8a2c6c
+        gps.dingDingRobot.token = 5574cdcb-e141-4ef7-b120-532fad242c12
+        stocktake.errorMsg.token = 184cb796-af13-41f5-9cd9-abd8808311cd
+
+    # 车辆出库通知机器人
+    update wms_system_params set param_value = '6fd5b847-578f-4d33-8e4d-1800089cdb8d',gmt_modified = NOW() where param_key = 'CAR_DELIVERY_ROBOT' AND `status` = 1;
+
+    # 留置车辆告警机器人
+    update wms_system_params set param_value = '2715167e-18bc-407d-a07c-05d2c0e6ea74',gmt_modified = NOW() where param_key = 'CAR_IN_STORE_WARN' AND `status` = 1;
+
+    # 建行待绑定GPS通知 & GPS绑定统计
+    update wms_system_params set param_value = '985aa7a1-11d3-4935-98bc-c617f0d9b784',gmt_modified = NOW() where param_key = 'JIANHANG_WAIT_BIND_NOTICE' AND `status` = 1;
+    update wms_system_params set param_value = '985aa7a1-11d3-4935-98bc-c617f0d9b784',gmt_modified = NOW() where param_key = 'JIANHANG_STAT_NOTICE' AND `status` = 1;
+
+    # GPS低电量预警 & GPS未激活预警
+    update wms_system_params set param_value = '36df70d9-a72c-42e5-a3b1-439b9c29ecba',gmt_modified = NOW() where param_key = 'GPS_WARNNING_LOW_ELECT' AND `status` = 1;
+    update wms_system_params set param_value = '36df70d9-a72c-42e5-a3b1-439b9c29ecba',gmt_modified = NOW() where param_key = 'GPS_WARNNING_NOT_ACTIVE' AND `status` = 1;
+
+    # 钥匙申请审核通知
+    update wms_system_params set param_value = '8df872ae-3bda-4802-87a7-be1357898944',gmt_modified = NOW() where param_key = 'KEY_APPLY_CHECK_NOTICE' AND `status` = 1;
+
+    # 在库换车通知
+    update wms_system_params set param_value = '270adc45-e46d-4b1b-9451-10cb1590cd58',gmt_modified = NOW() where param_key = 'REPLACE_INSTORAGE_NOTICE' AND `status` = 1;
+
+
+pre配置：
+    koe：
+        # 新增
+        wx.wms.agentId = 1000045
+        wx.wms.appId = 70908336941322240
+    dayu：
+        #修改
+        ambulance.dingDingRobot.needHandleToken = ae828c1e-e5a0-4de1-9595-c14c80bb2214
+    mclaren：
+        # 新增
+        spring.wms.agentId = 1000045
+        #修改
+        wms.dingding.token = ae828c1e-e5a0-4de1-9595-c14c80bb2214
+        wms.robot.webhook = ae828c1e-e5a0-4de1-9595-c14c80bb2214
+        gps.dingDingRobot.token = ae828c1e-e5a0-4de1-9595-c14c80bb2214
+        stocktake.errorMsg.token = ae828c1e-e5a0-4de1-9595-c14c80bb2214
+
+    # 车辆出库通知机器人
+    update wms_system_params set param_value = 'ae828c1e-e5a0-4de1-9595-c14c80bb2214',gmt_modified = NOW() where param_key = 'CAR_DELIVERY_ROBOT' AND `status` = 1;
+
+    # 留置车辆告警机器人
+    update wms_system_params set param_value = 'ae828c1e-e5a0-4de1-9595-c14c80bb2214',gmt_modified = NOW() where param_key = 'CAR_IN_STORE_WARN' AND `status` = 1;
+
+    # 建行待绑定GPS通知 & GPS绑定统计
+    update wms_system_params set param_value = 'ae828c1e-e5a0-4de1-9595-c14c80bb2214',gmt_modified = NOW() where param_key = 'JIANHANG_WAIT_BIND_NOTICE' AND `status` = 1;
+    update wms_system_params set param_value = 'ae828c1e-e5a0-4de1-9595-c14c80bb2214',gmt_modified = NOW() where param_key = 'JIANHANG_STAT_NOTICE' AND `status` = 1;
+
+    # GPS低电量预警 & GPS未激活预警
+    update wms_system_params set param_value = 'ae828c1e-e5a0-4de1-9595-c14c80bb2214',gmt_modified = NOW() where param_key = 'GPS_WARNNING_LOW_ELECT' AND `status` = 1;
+    update wms_system_params set param_value = 'ae828c1e-e5a0-4de1-9595-c14c80bb2214',gmt_modified = NOW() where param_key = 'GPS_WARNNING_NOT_ACTIVE' AND `status` = 1;
+
+    # 钥匙申请审核通知
+    update wms_system_params set param_value = 'ae828c1e-e5a0-4de1-9595-c14c80bb2214',gmt_modified = NOW() where param_key = 'KEY_APPLY_CHECK_NOTICE' AND `status` = 1;
+
+    # 在库换车通知
+    update wms_system_params set param_value = 'ae828c1e-e5a0-4de1-9595-c14c80bb2214',gmt_modified = NOW() where param_key = 'REPLACE_INSTORAGE_NOTICE' AND `status` = 1;
+
+WMS应用agentId
+online：1000019
+pre：1000045
+
+发布计划：
+    0.合并代码 ok
+    1.Apollo发布mclaren、dayu、koe配置  ok
+    2.mclaren变更数据库机器人token  ok
+    3.清除wms 机器人缓存 sys_param_ROBOT
+
+问题：
+    1.未@人
+    2.低电预警
+    3.gps统计字符超限制未能发出
+
+
+修改：
+
+    修改配置时记得修改online 和 k8s on
+onlie：    
+# mclaren增加以下2个配置即可
+workNotice.wms.appId = 571268570461454336
+workNotice.wms.agentId = 1000048
+
+
+# koe修改配置
+wx.wms.appId=571268570461454336
+wx.wms.agentId=1000048
+
+# eye修改
+
+
+# 测试
+
+workNotice.wms.appId = 359417315374141440
+workNotice.wms.agentId = 1000006
+
+
+

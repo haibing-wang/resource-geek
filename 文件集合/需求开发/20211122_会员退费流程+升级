@@ -1,0 +1,230 @@
+prd：https://cf.dawanju.net/pages/viewpage.action?pageId=88477785
+
+产品确认：
+	1.运营创建的会员要去升级怎么办？ 不能升级
+	2.转账退回不确定自动创建”请款单“
+	3.财务退款状态是否需要监听?
+
+梳理：
+	审批流程交互：
+		1.流程创建接口，及需要的参数。
+			公司主体：杭州一骑轻尘信息技术有限公司
+			付款大类：会员费
+			商家名称：会员名
+			退款方式：
+			存管退回
+			支付宝退回
+			微信退回
+			转账退回： 
+			收款人：
+			开户行：
+			账号：
+			金额：退会员时填写的金额
+			备注：退会员时填写的备注
+			出款单号
+		2.转账退回时，业务经理审核填入三要素，lite这边需要拿到
+		3.到达”出纳审核“时，创建 请款单，并将请款单传入到流程里
+	
+	待确认	
+
+		4.能否获取流程当前进度？（跟取消流程判断有关）
+		5.人为关闭流程、风险商家关闭流程
+		6.流程展示
+
+	
+	财务接口：
+		1.根据feeCode 查询支付详情（支付方式，支付时间，付款账户）
+		2.原路退回接口，生成请款单接口。
+	
+	待确认
+		3.receiveConsumerId 怎么拿到     
+		4.每种支付类型的”付款账号“信息确定
+
+	产品待确认：
+		1.校验的账户是否值“付款账户”
+		2.存管有多笔记录如何校验
+		3.转账支付以流水的账户为准吗？多笔流水如何判断？
+
+	前端确认：
+		1.App getVipStatus 对于会员冻结状态的判断。
+		2.升级购买会员，升级抵扣的费用返回问题。
+		3.签约成功 getVipFee 返回”升级抵扣费用“的问题。
+		4.
+
+
+
+相关接口：
+	财务接口：
+	  根据feeCode查询支付信息（根据支付方式的不同去属性中可以拿到付款账号信息）
+	  com.ds.api.service.intf.PayPlatformService#getPayRecord(com.ds.api.pojo.request.PayPlatRequest) 传入innerOrderIds（feeCode）
+	  
+
+
+支付方式分组
+	支付宝：
+		ALIPAY_APP(6, "支付宝APP支付"),
+		ALIPAY_QR_PAY(23, "支付宝扫码支付"),
+	微信：
+		WECHAT_APP(11, "微信app支付"),
+		WXPAY_QR_PAY(24, "微信扫码支付"),
+	存管：
+		PS_DEPOSITORY_PAYMENT(25, "个人存管支付"),
+		EP_DEPOSITORY_PAYMENT(26, "企业存管支付"),
+	线下转账：
+		TRANSFER_PAYMENT(21, "转账支付"),
+
+退会员流程：
+	1.校验会员当前状态是否“待生效”或“生效中”、是否冻结、余额是否冻结。
+	2.检验通过后，将会员”冻结“，冻结理由是”退会员“。
+	3.查询会员当前的“待生效”或“生效中”的等级实例，然后查询出对应的开通记录编号，然后拿到feeCode。
+	4.校验”退款方式“，如果有多个feeCode则校验”支付方式“是否相同，支付方式相同则去对应的支付方式中校验”支付时间“是否都满足要求，不满足则返回”转账支付“方式。
+	5.生成”退费结算单“数据。
+	6.去crm查询当前会员公司对应的”业务经理“信息，如果没有则传入兜底的蓝胖作为发起人。
+	7.组装参数，调用流程发起接口。
+
+提供生成出款单接口：
+	1.首先校验是否可以自动生成”请款单“，如果为否则返回空字符串（表示需要财务手动生成请款单）。
+	2.如果可以自动生成，则校验”退款方式“，如果为”转账退款“则校验入参是否传入业务经理填写的”三要素“，校验通过则校验是否和购买会员的账号一致，一致则自动生成请款单，不一致则返回空（表示需要财务手动生成请款单）；
+	3.其他付款方式则自动生成请款单，然后返回请款单编号。
+
+
+mq监听退会员审批流程：
+	驳回：
+		1.解冻会员（退会员的冻结），将退费结算单状态置为”审批驳回“，
+	通过：
+		1.解冻会员（退会员的冻结），将退费结算单状态置为”审批通过“。
+		2.将对应退费的”开通记录“的”是否退费“字段置为”是“并将set”退费单编号“。
+
+取消退会员：
+	1.首先校验退款单的
+
+
+接口梳理：
+	1.获取会员群体
+	https://faw-liberate-c.maihaoche.net/api/gw/h1/vipManagement/getCustomerTypeList
+	返回经销商会员、平行进口会员等5个会员群体
+
+	2.获取所有有效的会员等级
+	/api/gw/h1/vipManagement/getAllValidVipGradeList
+	返回所有有效的等级模板，然后前段根据customerType进行分组查看。
+
+
+线下转账校验 流水中的 支付银行、账号、账号名称
+
+账号校验：
+	1.转账    所有流水里边的 payAccountName   流水里的交易时间  汇总所有流水的金额？
+	2.存管    多条的 payCustAccount          多条的话金额汇总？
+	3.三方支付 accountName   				确定是否有金额？
+
+监听流程节点：
+	消息体：ProcessMessage
+	tag：ProcessMessage tag:ProcessMessage_1
+
+
+工作流交互：
+	1.创建工作流参数
+	2.监听工作流审批节点信息
+	3.监听工作流完成/终止信息
+	4.出纳创建请款单接口
+	5.取消工作流
+	6.查询流程节点信息
+
+
+测试考虑：
+	1.回归购买会员余额抵扣是否正常
+	2.回归签约合同内容是否正常
+	3.
+
+PC接口定义：
+退会员：
+	1.退会员（修改）
+	vipManagement/refundVip.json
+	新增详情字段 detailFormList
+
+	2.查询会员可退款信息
+	vipManagement/canRefundInfo.json
+
+	3.会员流程中心列表信息
+	vipWorkFlow/list.json
+
+	4.取消退会
+	vipWorkFlow/cancelRefund.json
+
+	5.查看进度
+	vipWorkFlow/checkProgress.json
+
+升级关系：
+	6.获取会员等级模板信息（修改）
+	vipManagement/gradeTpItems.json
+	新增2个字段  customerType、customerTypeDesc
+
+	7.获取升级规则
+	upgradeRelation/getUpgradeRule.json
+
+	8.会员升级关系列表
+	upgradeRelation/list.json
+
+	9.会员升级关系保存
+	upgradeRelation/save.json
+
+	10.会员升级关系回显
+	upgradeRelation/echo.json
+
+	11.会员升级关系编辑
+	upgradeRelation/edit.json
+
+	12.会员关系删除
+	upgradeRelation/delete.json
+
+开通记录页面：
+	13.会员开通记录详情（修改）
+	vipManagementGrant/detail.json
+	新增字段：余额抵扣金额、会员费抵扣金额、实付金额、是否分期类型、分期类型描述
+
+创建会员接口：
+	1.获取创建会员按钮
+	vipManagement/getIsShowCreateVipBtn.json
+
+	2.手动创建会员
+	vipManagement/createVip.json
+
+	3.根据名称查询公司数据
+	vipManagement/queryPartnerSimpleInfo.json
+
+App接口定义；
+	1.获取升级抵扣费用
+	/v1/activateVip/getVipFeeDeduction
+	返回结果结构等同 -> /h1/vipManagementgetAllValidVipGradeList
+
+	2.获取可升级的等级模板
+	/v1/activateVip/getCanUpgradeList
+
+	3.查询是否展示升级按钮
+	/v1/activateVip/showUpgradeBtn
+
+	4.获取会员状态（修改）
+	/v1/activateVip/getVipStatus
+	修改字段描述
+
+
+再确认：
+	1.存管支付的时间和金额是否是取 DpCashInfo 中的tradeAmount（单位分？）、dealTimeStr (格式yyyy-MM-dd HH:mm:ss？)，总金额是否汇总？ 
+	2.转账支付的总金额 是否 TransferRecordReponse 的amount（单位分？）
+
+存管：只需要考虑单条的情况，因为购买会员创建的feeCode都是统一的ConsumerId，取 DpCashInfo 中的tradeAmount（单位分）、dealTimeStr (格式yyyy-MM-dd HH:mm:ss)
+转账支付：只需要考虑付款账号即可 从流水记录获取 DealCashRelResponse.payAccount
+
+
+HumanTask: 退会员流程查看进度取值
+name ：任务名称（业务经理审批、上级审批...）
+assigneeName：操作人 （当前的处理人）
+comment：审批说明
+action：任务操作（已通过、操作中。。。）
+
+-- 查询微信id sql
+select a.staff_id,a.name,b.external_system_id from auth_staff a join auth_external_system_ref b on a.staff_id = b.internal_system_id where b.system = 3 and a.`name` = '郭茂洋';
+
+
+
+
+

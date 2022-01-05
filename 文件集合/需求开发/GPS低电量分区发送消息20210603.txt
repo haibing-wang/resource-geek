@@ -1,0 +1,43 @@
+发布gps低电改造需求：
+	1.插入数据
+	2.
+
+# 测试环境 & 预发
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_北京特区', '24abc664-12ba-4463-ae8f-8c5db82fe7a1', 'GPS低电量预警_北京特区',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_港口特区', 'e2303c0a-9ddb-4dc8-abf9-937cd9551944', 'GPS低电量预警_港口特区',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_东北', 'a67fe8fc-42b9-4a43-a00b-7139c588788e', 'GPS低电量预警_东北',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_华北', 'f8364be3-4fe1-49cf-b3c8-352be5091935', 'GPS低电量预警_华北',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_华东', 'e946d931-c1cf-4f7c-a415-383a4419d000', 'GPS低电量预警_华东',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_华南', 'c5236175-f14a-4849-b810-51ceb2bb37c5', 'GPS低电量预警_华南',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_华中', 'fdaed11a-53d7-4070-9bf6-b42028e5330b', 'GPS低电量预警_华中',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_西南', '877cc995-9087-4f05-a2e8-11eba29b941b', 'GPS低电量预警_西南',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_中西', '49d8407a-8ea2-4751-b262-352e9a41727a', 'GPS低电量预警_中西',now(),now());
+
+
+
+,`gmt_create`,`gmt_modified`
+,now(),now()
+
+
+# 线上配置
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_北京特区', '2b46881e-ebc8-43be-bc21-fe10985ffa96', 'GPS低电量预警_北京特区',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_港口特区', '6839ad59-a704-4f54-a401-daf452e58ad7', 'GPS低电量预警_港口特区',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_东北', '9a6c26c1-6de9-441f-8a3d-76a67cafec26', 'GPS低电量预警_东北',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_华北', '597d5389-ae38-44f7-9061-104729fce6df', 'GPS低电量预警_华北',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_华东', '91846096-547c-4f98-93c7-86ee024f05b5', 'GPS低电量预警_华东',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_华南', 'aa6960df-19ec-485a-a879-19977dbd1cdd', 'GPS低电量预警_华南',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_华中', '2ca189d6-3bcd-4c02-81e9-98d6939faf1f', 'GPS低电量预警_华中',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_西南', '88b7ade2-2d5a-4383-8190-0c9abe49ba91', 'GPS低电量预警_西南',now(),now());
+INSERT INTO `db_b2b`.`wms_system_params`(`param_group`, `param_key`, `param_value`, `param_desc`,`gmt_create`,`gmt_modified`) VALUES ('ROBOT', 'GPS_WARNNING_LOW_ELECT_中西', '7afa7eb0-74c6-4d9e-9c7d-a0e8715a2f66', 'GPS低电量预警_中西',now(),now());
+
+
+GPS低电预警-北京特区  1
+GPS低电预警-港口特区 1
+GPS低电预警-东北  1
+GPS低电预警-华北 1
+GPS低电预警-华东 1
+GPS低电预警-华南  1
+GPS低电预警-华中  1
+GPS低电预警-西南  1 
+GPS低电预警-中西	1
+

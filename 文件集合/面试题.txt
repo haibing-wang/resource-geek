@@ -1,0 +1,112 @@
+面试题
+
+首先：先做下自我介绍
+
+java基础
+	访问修饰符 public,private,protected,以及不写（默认）时的区别？
+	说一下一个对象创建过程？
+	String 和 StringBuilder、StringBuffer 的区别？
+	用最有效率的方法计算 2 乘以 8？
+	阐述 ArrayList、LinkedList 的特性。
+	java8对hashMap的优化
+	HashMap put时都做了什么？还有扩容机制
+
+
+	描述下BIO和NIO的线程模型，已经NIO是如何提升性能的
+	什么是阻塞和非阻塞IO
+	简单概括下select poll epoll
+
+	java内存模型
+	jvm内存模型
+	描述一下 JVM 类加载机制，双亲委派模型
+	说下垃圾回收算法
+	说一下你了解的垃圾收集器
+
+	
+	线程有哪些状态？NEW，RUNNABLE，BLOCKED，WAITING，TIMED_WAITING，TERMINATED
+	sleep() 和 wait()的区别
+	描述下线程池参数的含义；
+	有没有了解过synchronized的实现原理，
+	简述 synchronized 和 java.util.concurrent.locks.Lock 的异同？
+	AQS的公平锁和非公平锁是如何实现的？
+
+	简述一下你了解的设计模式
+	描述如何写一个java单例类
+
+spring
+	简述spring IOC的加载流程
+	Spring如何解决的循环依赖？
+	@Autowired和@Resource的区别
+	spring生命周期的回调方法有几种方式：
+	spring的事务是如何实现的？
+	spring事务的传播行为
+	mybatis如何和spring集成的？
+
+一次完整的HTTP请求过程
+
+
+redis
+	redis中有哪些数据类型，不同的数据类型适用于哪些场景？
+	介绍下redis中的持久化方式
+	redis主从之间的数据是如何同步的？
+	缓存穿透。产生这个问题的原因可能是外部的恶意攻击（缓存空对象，布隆过滤器）
+	缓存击穿，就是某个热点数据失效时，大量针对这个数据的请求会穿透到数据源。
+	缓存淘汰策略
+	如何使用redis作为分布式锁
+
+mysql
+	1.事务的 ACID 是指什么？
+	2.阐述下事务的隔离级别
+	mysql数据是如何存储的
+	设置索引有哪些原则
+	mysql的查询优化，explain解释器的type列有哪些类型，不同的类型分别在哪些场景出现？
+	key_len列是如何计算的（联合索引）
+	mysql有哪些锁？
+	mysql是如何支持的可重复读？介绍下MVCC版本链原理
+
+zk
+	描述下zk是什么，可以用它做什么
+	zk有哪些节点类型
+	zk快速领导选举流程
+
+
+dubbo
+	dubbo 支持哪些协议？
+	dubbo如何实现的对多协议的支持（Dubbo SPI机制）
+	dubbo有哪些集群容错策略
+	dubbo有哪些负载均衡策略
+	dubbo和spring是如何整合的
+	dubbo服务导出流程
+
+MQ
+	说下为什么使用MQ？MQ有哪些应用场景
+	如何保证顺序消费
+	如何保证数据不被重复消费
+
+
+netty:
+1.Netty 中有哪种重要组件？
+	Channel：Netty 网络操作抽象类，它除了包括基本的 I/O 操作，如 bind、connect、read、write 等。
+	EventLoop：主要是配合 Channel 处理 I/O 操作，用来处理连接的生命周期中所发生的事情。
+	ChannelFuture：Netty 框架中所有的 I/O 操作都为异步的，因此我们需要 ChannelFuture 的 addListener()注册一个 ChannelFutureListener 监听事件，当操作执行成功或者失败时，监听就会自动触发返回结果。
+	ChannelHandler：充当了所有处理入站和出站数据的逻辑容器。ChannelHandler 主要用来处理各种事件，这里的事件很广泛，比如可以是连接、数据接收、异常、数据转换等。
+	ChannelPipeline：为 ChannelHandler 链提供了容器，当 channel 创建时，就会被自动分配到它专属的 ChannelPipeline，这个关联是永久性的。
+
+2.Netty 服务端和客户端的启动过程了解么？
+2.TCP 粘包/拆包的原因及解决方法
+3.什么是 Netty 的零拷贝
+4.客户端连接数有多少？如何进行的优化
+5.netty的出入站
+
+
+
+问题排查：
+	1.Cpu占用率100%如何排查
+
+工作中领你印象比较深刻的一件事
+我们公司的定位是汽车服务平台，主要业务
+	车源：为车商提供车源相关服务，
+	汽车金融：解决经销商在汽车流通中的资金需求
+	物流：为企业或个人提供物流和仓储服务。
+	仓储：
+

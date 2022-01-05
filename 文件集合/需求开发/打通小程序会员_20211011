@@ -1,0 +1,107 @@
+打通小程序会员_20211011
+
+会员开通流程：
+	1.点击。。。调用 /h1/vipManagement/vipGradeSign
+	 去斯柯达创建合同，并生成b2b_vip_management_contract_sign 中的数据，此时还没有开通记录
+	2.然后回去走签约的流程，此流程是原先就有的非会员系统开发
+	3.签约完成后，lite会监听斯柯达的签约完成消息
+	  1）生成开通记录表记录
+	  2）生成分期支付任务表记录
+	  3）更新签章表状态为“已签章”
+	  4）我司盖章
+	4.然后调用会员费用接口，此时就可以去支付了 /h1/vipManagement/getVipFee
+	5.点击去支付的时会调用 /h1/vipManagement/payVipFee
+	  1）生成财务账单
+	  2）创建 b2b_vip_management_bill_record 记录
+	6.支付成功后监听财务回调，会调用 VipManagementGrantServiceImpl#payFinish
+	  1）b2b_vip_management_installment 和 b2b_vip_management_bill_record 设为支付完成
+	  2）创建 b2b_vip_management 记录
+	  3）生成等级实例、权益包实例、权益实例
+
+之前的导入会员流程：
+	1.创建b2b_vip_management_contract_sign中的数据，合同id和编号都可以是假的
+	2.签章表状态设为“已签章”
+	3.创建会员表数据
+	4.创建开通记录表数据  无账单相关数据
+	5.创建分期支付任务表数据
+	6.创建等级实例、权益实例
+	7.分期支付任务表设置为“已支付”
+	8.充值会员余额（创建余额账户）
+	9.走激活流程
+
+
+小程序会员同步到现有会员体系：
+
+会员续期问题：
+	1.开通记录表新增购买类型：“会员续期”
+	2.东西都该生成生成，在激活的时候，将gradeIns和rightsIns的有效期进行继承。
+	3.会员有效期也进行更新
+
+问题：
+	1.小程序会员开通校验是否跟app一致？（储值包额度包校验，企业未认证校验）
+	2.购买会员是否考虑余额抵扣？
+	3.取消开通步骤？
+	4.购买成功后立即激活？
+	
+	5.确定收款方        财务单由eado创建，使用”陆车“作为收款方
+	6.确定没有合同会怎样 （并不会怎样）
+	7.
+
+需确认问题：
+	小程序的权益如何配置?
+	小程序权益如何展示？（用户权益列表，权益模板页面）
+	直接拿掉”重复名称会员等级“的限制会不会有问题？
+
+
+
+PC后台接口：
+	1./vipGradeTemplate/save.json 保存会员等级模板
+	https://yapi.maihaoche.net/project/501/interface/api/61213
+		新增字段入口类型 entryType
+
+	2./vipGradeTemplate/list.json 会员等级模板列表
+	https://yapi.maihaoche.net/project/501/interface/api/61205
+		新增字段入口类型描述 entryTypeDesc
+
+	3./vipGradeTemplate/detail.json 会员等级模板详情
+	https://yapi.maihaoche.net/project/501/interface/api/61189
+		新增字段入口类型 entryType
+
+	4.vipManagementGrant/list.json 会员开通记录列表信息
+	https://yapi.maihaoche.net/project/501/interface/api/59053
+		新增字段referrerName referrerMobile referrerCorp
+小程序接口：
+	1./weChatPurchase/newMhcCar/getVipGrade 获取可购买的会员等级（新增接口）
+	https://yapi.maihaoche.net/project/497/interface/api/81256
+	
+	2./weChatPurchase/newMhcCar/buyVip 会员购买
+	https://yapi.maihaoche.net/project/497/interface/api/76082
+	改动点：字段vipType为通过接口"获取可购买的会员等级"获取的会员等级模板的“id”值
+
+	3./weChatPurchase/newMhcCar/payResult 支付结果查询（与原先保持不变）
+	https://yapi.maihaoche.net/project/497/interface/api/76084
+
+
+
+
+# 上线上线上线上线上线上线上线上线上线上线上线上线上线上线上线
+
+注意事项：
+	0.lite正式包，eado和polestar依赖  ✅
+	1.线上数据库变更、执行初始化小程序权益脚本 ✔✅
+	2.apollo配置变更、新增topic ✅
+	3.先让蓝胖运营配置好小程序权益、更新所有会员等级
+	4.导入小程序会员，可以使用备库查询数据，excel无须修改格式什么的
+	5.调用老会员发放小程序权益接口，找到3个小程序类型权益模板的id，然后可以通过下面的sql验证是否都发放成功
+	6.提醒岩石
+	7.确定导入小程序会员失败的公司如何处理（已存在app会员数据）
+
+# 查询生效中没有小程序权益的会员数量
+SELECT count(1)
+  FROM b2b_vip_management a
+ WHERE a.`status`= 2
+   AND a.partner_id NOT IN(
+SELECT DISTINCT partner_id
+  FROM b2b_vip_rights_ins
+ WHERE type= 500) ;
+

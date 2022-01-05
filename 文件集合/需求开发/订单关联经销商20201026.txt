@@ -1,0 +1,138 @@
+20201027
+「金融」订单关联经销商
+https://cf.dawanju.net/pages/viewpage.action?pageId=60630852
+
+我的车辆列表
+https://faw-liberate-u.maihaoche.net/api/v15/warehouse/queryPickCarList.json
+
+{
+	"warehouseId": 0,
+	"assetRightId": 100008707,
+	"assetRightType": "2"
+}
+
+{
+	"assetRightId": 100008707,
+	"searchParam": "",
+	"warehouseId": 100001302,
+	"assetRightType": "2"
+}
+{
+	"assetRightId": 100008707,
+	"searchParam": "123456",
+	"warehouseId": 100001302,
+	"assetRightType": "2"
+}
+
+
+{
+	"realName": "杨坤丽",
+	"hasSigner": true,
+	"dmsPartnerId": 100008707,
+	"resultCode": "1",
+	"mobile": "17816869287",
+	"corpVerifyState": 20,
+	"corpName": "凯迪生态环境科技股份有限公司",
+	"partnerId": 100008707,
+	"userId": 100008391,
+	"persionVerifyState": 20
+}
+
+看车申请
+https://faw-liberate-u.maihaoche.net/api/v14/warehouse/applCheck.json
+
+{
+	"warehouseId": "1",
+	"carIdList": [100599720],
+	"search": [],
+	"checkerNum": "1",
+	"appointmentDate": "2020-10-29",
+	"receiverPhone": "18114922123",
+	"partnerId": 100008707,
+	"mode": "2"
+}
+
+结果
+{
+	"result": 320,
+	"resultCode": "1"
+}
+
+三个接口：
+
+查询关联车辆数量接口
+
+链接：/v1/index/getOrderRelatedCars.json
+入参：无
+出参：
+{
+	"result": 320
+}
+
+看车申请接口
+v14/warehouse/applCheck.json
+目前是以：申请人Id or 公司id两个条件去判断的，可以看到自己申请的其他公司的
+
+wmsCarId -> applyId
+wmsCarId -> applyId
+mvn -pl mclaren-api -am clean deploy -U -DskipTests
+
+看车申请函：
+https://faw-liberate-c.maihaoche.net/api/v14/warehouse/listCheckAppl.json
+
+{
+	"start": 0,
+	"pageSize": 20
+}
+
+mclaren：feature/order_relate_guomaoyang_20201027
+mini-all：feature/order_related_guomaoyang_20201027
+hummer：hotfix/order_relate_guomaoyang_20201109
+
+查询运单接口
+
+https://hummer-u.maihaoche.net/h5/trunkLineOrder/queryOrderList.json?orderStatus=1,2&bizOrderNo=GP202011062383312605&sourceType=1&pageSize=20&pageNo=1
+返回参数：
+
+点击付款2个接口：
+https://hummer-u.maihaoche.net/h5/trunkLineOrder/queryCarList.json
+{
+	"pageNo": 1,
+	"pageSize": 20,
+	"transportOrderNo": "YD20201106885452",
+	"keyword": ""
+}
+
+https://hummer-u.maihaoche.net/h5/trunkLineOrder/queryOrderDetail.json?transportOrderNo=YD20201106885452
+
+有用户校验：
+queryCarList.json
+
+queryOrderDetail.json
+
+/payTransportForm.json
+
+
+需要改的校验的接口：
+/queryExpenseDetail.json
+/payTransportForm.json
+
+
+
+{"success":true,"code":"200","message":"","data":[100641447,100641448],"timestamp":1604632861113}
+{"success":true,"code":"200","message":"","data":[100641447,100641448],"timestamp":1604633460756}
+
+{"success":true,"code":"200","message":"","data":[100641447,100641448],"timestamp":1604640882725}
+100011125
+
+release分支：
+
+mclaren：release/order_relate_guomaoyang_20201111
+hummer：hotfix/order_relate_guomaoyang_20201109
+mini-all：release/order_relate_guomaoyang_20201111
+问题：
+	1.关联车辆数量和列表的数量是否一致
+
+上线注意：
+	1.mclaren和hummer，mini 三个都要 更换 迈腾的正式包，
+	2.mclaren 打正式包，mini更改mclaren的正式包

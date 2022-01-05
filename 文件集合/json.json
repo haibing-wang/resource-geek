@@ -1,0 +1,175 @@
+
+#调用redis缓存或者路虎返回的按钮链接
+[
+    {
+        "backgroundImg":"https://img.maihaoche.com/4B9239DE-8F1A-4A70-8023-378F52E68A69.png",
+        "differentTypeUrl":[
+            {
+                "title":"个人车辆",
+                "url":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/101/user/1"
+            },
+            {
+                "title":"企业车辆",
+                "url":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/101/user/2"
+            }],
+        "name":"提车",
+        "nativeValue":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/101/user/1,https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/101/user/2",
+        "pointName":"storage_CarPickup_click",
+        "type":0
+    },
+    {
+        "backgroundImg":"https://img.maihaoche.com/0262B1CD-EA2F-43AF-95F5-AF00AFC4E77E.png",
+        "differentTypeUrl":[
+            {
+                "title":"个人车辆",
+                "url":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/106/user/1"
+            },
+            {
+                "title":"企业车辆",
+                "url":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/106/user/2"
+            }],
+        "name":"看车",
+        "nativeValue":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/106/user/1,https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/106/user/2",
+        "pointName":"storage_CarWatch_click",
+        "type":0
+    },
+    {
+        "backgroundImg":"https://img.maihaoche.com/A8647E32-86DD-4433-91E0-F2C50290EF59.png",
+        "differentTypeUrl":[
+            {
+                "title":"个人车辆",
+                "url":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/104/user/1"
+            },
+            {
+                "title":"企业车辆",
+                "url":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/104/user/2"
+            }],
+        "name":"移库",
+        "nativeValue":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/104/user/1,https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/104/user/2",
+        "pointName":"storage_ChangePosition_click",
+        "type":0
+    },
+    {
+        "backgroundImg":"https://img.maihaoche.com/2D8000F7-02EF-4E01-AD1D-2A128E43FED5.png",
+        "differentTypeUrl":[
+            {
+                "title":"个人车辆",
+                "url":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/102/user/1"
+            },
+            {
+                "title":"企业车辆",
+                "url":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/102/user/2"
+            }],
+        "name":"已售交接",
+        "nativeValue":"https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/102/user/1,https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/102/user/2",
+        "pointName":"storage_SaleHandover_click",
+        "type":0
+    },
+    {
+        "backgroundImg":"https://img.maihaoche.com/AE11FD00-9B0B-42F2-80E4-EAA8D05D35E2.png",
+        "name":"手续钥匙",
+        "nativeValue":"https://faw-liberate-{namespace}.maihaoche.net/carCenter/ProceDureKey/all",
+        "pointName":"storage_ProceduresKey_click",
+        "type":0
+    }]
+
+#整个接口返回的Json
+{
+    "result": {
+        "applicationLetterUrl": "https://faw-liberate-u.maihaoche.net/carCenter/applicationLetter",
+        "applyJoinWarehouseUrl": "https://faw-liberate-u.maihaoche.net/rksq",
+        "hasStorage": true,
+        "moduleList": [{
+            "backgroundImg": "https://img.maihaoche.com/4B9239DE-8F1A-4A70-8023-378F52E68A69.png",
+            "checkErrorMsg": null,
+            "checkType": null,
+            "differentTypeUrl": [{
+                "title": "个人车辆",
+                "url": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/101/user/1"
+            }, {
+                "title": "企业车辆",
+                "url": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/101/user/2"
+            }],
+            "name": "提车",
+            "nativeValue": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/101/user/1,https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/101/user/2",
+            "pointName": "storage_CarPickup_click",
+            "priority": null,
+            "productType": null,
+            "state": null,
+            "type": 0
+        }, {
+            "backgroundImg": "https://img.maihaoche.com/0262B1CD-EA2F-43AF-95F5-AF00AFC4E77E.png",
+            "checkErrorMsg": null,
+            "checkType": null,
+            "differentTypeUrl": [{
+                "title": "个人车辆",
+                "url": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/106/user/1"
+            }, {
+                "title": "企业车辆",
+                "url": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/106/user/2"
+            }],
+            "name": "看车",
+            "nativeValue": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/106/user/1,https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/106/user/2",
+            "pointName": "storage_CarWatch_click",
+            "priority": null,
+            "productType": null,
+            "state": null,
+            "type": 0
+        }, {
+            "backgroundImg": "https://img.maihaoche.com/A8647E32-86DD-4433-91E0-F2C50290EF59.png",
+            "checkErrorMsg": null,
+            "checkType": null,
+            "differentTypeUrl": [{
+                "title": "个人车辆",
+                "url": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/104/user/1"
+            }, {
+                "title": "企业车辆",
+                "url": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/104/user/2"
+            }],
+            "name": "移库",
+            "nativeValue": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/104/user/1,https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/104/user/2",
+            "pointName": "storage_ChangePosition_click",
+            "priority": null,
+            "productType": null,
+            "state": null,
+            "type": 0
+        }, {
+            "backgroundImg": "https://img.maihaoche.com/2D8000F7-02EF-4E01-AD1D-2A128E43FED5.png",
+            "checkErrorMsg": null,
+            "checkType": null,
+            "differentTypeUrl": [{
+                "title": "个人车辆",
+                "url": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/102/user/1"
+            }, {
+                "title": "企业车辆",
+                "url": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/102/user/2"
+            }],
+            "name": "已售交接",
+            "nativeValue": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/102/user/1,https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/102/user/2",
+            "pointName": "storage_SaleHandover_click",
+            "priority": null,
+            "productType": null,
+            "state": null,
+            "type": 0
+        }, {
+            "backgroundImg": "https://img.maihaoche.com/AE11FD00-9B0B-42F2-80E4-EAA8D05D35E2.png",
+            "checkErrorMsg": null,
+            "checkType": null,
+            "differentTypeUrl": null,
+            "name": "手续钥匙",
+            "nativeValue": "https://faw-liberate-{namespace}.maihaoche.net/carCenter/ProceDureKey/all",
+            "pointName": "storage_ProceduresKey_click",
+            "priority": null,
+            "productType": null,
+            "state": null,
+            "type": 0
+        }],
+        "nearestWarehouseInfo": null,
+        "patnerCarNumber": 1958,
+        "patnerCarUrl": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/1/user/2",
+        "personCarNumber": 0,
+        "personCarUrl": "https://faw-liberate-u.maihaoche.net/carCenter/carList/mode/1/user/1",
+        "warehouseIndexImgUrl": null
+    },
+    "resultCode": "1"
+}

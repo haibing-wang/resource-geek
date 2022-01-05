@@ -1,0 +1,8 @@
+"100"	"0"	"金融"	"https://img.maihaoche.com/ninetales/assets/rightMoney.png"	" https://img.maihaoche.com/ninetales/assets/qyBgMoney.png"	"19/3/2021 10:09:51"	"29/3/2021 14:53:48"	"0"
+"101"	"100"	"银行精选"			"19/3/2021 10:10:58"	"19/3/2021 10:10:58"	"0"
+"200"	"0"	"仓储"	"https://img.maihaoche.com/ninetales/assets/rightsHouse.png"	"https://img.maihaoche.com/ninetales/assets/qyBgHouse.png"	"19/3/2021 10:10:05"	"29/3/2021 11:07:15"	"0"
+"201"	"200"	"自建仓"			"19/3/2021 10:11:16"	"19/3/2021 10:11:16"	"0"
+"202"	"200"	"托管仓"			"19/3/2021 10:11:24"	"19/3/2021 10:11:35"	"0"
+"300"	"0"	"交易"	"https://img.maihaoche.com/ninetales/assets/rightDiamond.png"	"https://img.maihaoche.com/ninetales/assets/qyBgDiamond.png"	"19/3/2021 10:10:13"	"29/3/2021 14:53:33"	"0"
+"301"	"300"	"极速代采"			"19/3/2021 10:11:41"	"19/3/2021 10:12:00"	"0"
+"400"	"0"	"车源赋能"	"https://img.maihaoche.com/ninetales/assets/rightCar.png"		"23/3/2021 17:40:23"	"23/3/2021 17:40:45"	"0"
